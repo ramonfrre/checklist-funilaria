@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Checklist Funilaria">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ff355a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Checklist Funilaria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#ff355a;--brand-l:#fff0f3;--brand-d:#c9203f;--or:#E8630A;--or-l:#FFF3EB;--ink:#111;--ink2:#3D3730;--ink3:#888;--rule:#E8E2DC;--bg:#F8F5F5;--wh:#fff;--gr:#1A7A3C;--gr-l:#E8F5EE;--rd:#C0281E;--rd-l:#FCECEA;--am:#7C5000;--am-l:#FFF7E0;--pu:#5B21B6;--pu-l:#EDE9FE;--bl:#1565C0;--bl-l:#E8F4FD;--sh:0 1px 5px rgba(0,0,0,.09)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;height:100dvh}
+.topbar{background:#ff355a;padding:14px 16px 10px;flex-shrink:0}
+.tb1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:18px;color:#ff355a;font-weight:700;flex-shrink:0}
+.bn{font-family:'Sora',sans-serif;font-size:16px;color:#fff;font-weight:700}
+.bs{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
+.ptag{font-family:'DM Mono',monospace;font-size:14px;background:rgba(255,255,255,.2);color:#fff;padding:7px 12px;border-radius:8px;letter-spacing:.1em;font-weight:700;min-width:68px;text-align:center;border:1.5px solid rgba(255,255,255,.4)}
+.pb-wrap{height:4px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden}
+.pb-fill{height:100%;background:#fff;border-radius:2px;transition:width .3s}
+.tb3{display:flex;justify-content:space-between;margin-top:7px}
+.tbs{font-size:12px;color:rgba(255,255,255,.9);font-family:'DM Mono',monospace;letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+.tbp{font-size:12px;color:#fff;font-family:'DM Mono',monospace;font-weight:600}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.pg{padding:16px 16px 20px}
+.bnav{background:#fff;border-top:1px solid var(--rule);padding:12px 16px 20px;display:flex;gap:10px;box-shadow:0 -2px 14px rgba(0,0,0,.07);flex-shrink:0}
+.bnav.hidden{display:none}
+.nb{flex:1;padding:16px;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;-webkit-user-select:none;user-select:none}
+.nb:active{opacity:.75}
+.nb-bk{background:var(--bg);color:var(--ink2);border:1.5px solid var(--rule)}
+.nb-nx{background:var(--brand);color:#fff}
+.nb-sd{background:var(--gr);color:#fff}
+.home-wrap{padding:8px 0}
+.home-title{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.home-sub{font-size:15px;color:var(--ink3);margin-bottom:24px;line-height:1.5}
+.home-btn{display:flex;align-items:center;gap:14px;background:var(--wh);border:1.5px solid var(--rule);border-radius:14px;padding:18px 20px;margin-bottom:12px;cursor:pointer;width:100%;text-align:left}
+.home-btn:active{background:var(--brand-l)}
+.home-btn-ico{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.home-btn.new .home-btn-ico{background:var(--brand-l)}
+.home-btn.hist .home-btn-ico{background:var(--pu-l)}
+.home-btn-title{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.home-btn-sub{font-size:13px;color:var(--ink3)}
+.card{background:var(--wh);border-radius:12px;box-shadow:var(--sh);margin-bottom:14px;padding:18px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.fld{margin-bottom:14px}
+.fld:last-child{margin-bottom:0}
+label{display:block;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+input[type=text],input[type=date]{width:100%;background:var(--bg);border:1.5px solid var(--rule);border-radius:9px;padding:14px;font-size:17px;font-family:'DM Sans',sans-serif;color:var(--ink);-webkit-appearance:none;transition:border-color .15s}
+input:focus{outline:none;border-color:var(--brand);background:#fff}
+.tec-select{width:100%;background:var(--bg);border:1.5px solid var(--rule);border-radius:9px;padding:14px;font-size:16px;font-family:'DM Sans',sans-serif;color:var(--ink);-webkit-appearance:none;appearance:none;outline:none;cursor:pointer}
+.tec-select:focus{border-color:var(--brand);background:#fff}
+.ip{font-family:'DM Mono',monospace !important;font-size:22px !important;font-weight:500 !important;letter-spacing:.15em !important;text-transform:uppercase !important}
+.notice{background:var(--am-l);border:1px solid #D4A843;border-radius:10px;padding:14px 16px;font-size:15px;color:var(--am);line-height:1.6}
+.shdr{display:flex;align-items:center;gap:10px;background:var(--brand-l);border-left:4px solid var(--brand);border-radius:10px;padding:13px 15px;margin-bottom:14px}
+.shn{font-family:'DM Mono',monospace;font-size:12px;color:var(--brand);font-weight:500;white-space:nowrap}
+.sht{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--ink);flex:1}
+.shp{font-family:'DM Mono',monospace;font-size:13px;color:var(--ink3);white-space:nowrap}
+.itm{background:var(--wh);border-radius:12px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden;border:2px solid transparent;transition:border-color .18s}
+.itm.montado{border-color:var(--gr)}.itm.desmontado{border-color:var(--or)}
+.itop{padding:15px 15px 11px;display:flex;align-items:flex-start;gap:10px}
+.iref{font-family:'DM Mono',monospace;font-size:12px;color:var(--brand);font-weight:500;min-width:28px;padding-top:2px;flex-shrink:0}
+.idesc{font-size:16px;font-weight:500;color:var(--ink);flex:1;line-height:1.5}
+.idot{width:10px;height:10px;border-radius:50%;background:var(--rule);flex-shrink:0;margin-top:4px;transition:background .18s}
+.idot.montado{background:var(--gr)}.idot.desmontado{background:var(--or)}
+.sbr{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--bg)}
+.sb{padding:16px 6px;border:none;background:var(--wh);cursor:pointer;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;color:var(--ink3);display:flex;flex-direction:column;align-items:center;gap:5px;border-right:1px solid var(--bg);transition:background .15s,color .15s;-webkit-user-select:none;user-select:none;min-height:60px}
+.sb:last-child{border-right:none}.sb:active{opacity:.7}
+.sb .ic{font-size:24px;line-height:1}
+.sb.mont{background:var(--gr-l);color:var(--gr)}.sb.desm{background:var(--or-l);color:var(--or)}
+.xtr{display:none;padding:13px 15px;border-top:1px solid var(--bg);background:var(--bg)}
+.xtr.open{display:block}
+.rec-toggle{display:flex;align-items:center;gap:12px;background:var(--wh);border-radius:10px;padding:14px 16px;margin-bottom:12px;border:1.5px solid var(--rule);cursor:pointer;transition:border-color .15s}
+.rec-toggle.on{border-color:var(--pu);background:var(--pu-l)}
+.rec-icon{font-size:22px;flex-shrink:0}
+.rec-text{flex:1}
+.rec-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.rec-sub{font-size:12px;color:var(--ink3)}
+.rec-toggle.on .rec-title{color:var(--pu)}
+.rec-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--rule);background:var(--wh);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s}
+.rec-toggle.on .rec-check{background:var(--pu);border-color:var(--pu);color:#fff}
+.comp-toggle{display:flex;align-items:center;gap:12px;background:var(--wh);border-radius:12px;padding:16px;margin-bottom:14px;border:1.5px solid var(--rule);cursor:pointer;transition:border-color .15s;box-shadow:var(--sh)}
+.comp-toggle.on{border-color:var(--bl);background:var(--bl-l)}
+.comp-icon{font-size:24px;flex-shrink:0}
+.comp-text{flex:1}
+.comp-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.comp-toggle.on .comp-title{color:var(--bl)}
+.comp-sub{font-size:12px;color:var(--ink3)}
+.comp-check{width:24px;height:24px;border-radius:6px;border:2px solid var(--rule);background:var(--wh);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s}
+.comp-toggle.on .comp-check{background:var(--bl);border-color:var(--bl);color:#fff}
+textarea{width:100%;background:#fff;border:1.5px solid var(--rule);border-radius:9px;padding:12px 14px;font-size:16px;font-family:'DM Sans',sans-serif;color:var(--ink);resize:none;transition:border-color .15s;margin-bottom:10px}
+textarea:focus{outline:none;border-color:var(--brand)}
+.fotos-wrap{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+.foto-thumb-wrap{position:relative;flex-shrink:0}
+.foto-thumb{width:72px;height:72px;border-radius:8px;object-fit:cover;border:2px solid var(--gr);display:block}
+.foto-del-btn{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--rd);color:#fff;border:none;border-radius:50%;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1}
+.foto-add-btn{display:flex;align-items:center;gap:7px;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.foto-add-btn:active{background:var(--brand-d)}
+.foto-obrig{font-size:12px;color:var(--rd);font-weight:600;margin-top:4px;display:none}
+.foto-obrig.show{display:block}
+input[type=file]{display:none}
+.pc{background:var(--wh);border-radius:12px;box-shadow:var(--sh);padding:18px;margin-bottom:12px}
+.pn{font-family:'DM Mono',monospace;font-size:12px;color:var(--brand);font-weight:500;margin-bottom:7px;text-transform:uppercase;letter-spacing:.06em}
+.pd{font-size:16px;font-weight:500;color:var(--ink);margin-bottom:14px;line-height:1.55}
+.s4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.sbox{background:#fff;border-radius:10px;padding:14px 4px;text-align:center;box-shadow:var(--sh)}
+.snum{font-family:'Sora',sans-serif;font-size:26px;font-weight:700}
+.slbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-top:3px;font-family:'DM Mono',monospace}
+.snum.t{color:var(--ink)}.snum.mo{color:var(--gr)}.snum.de{color:var(--or)}.snum.re{color:var(--pu)}
+.ib{background:#fff;border-radius:12px;box-shadow:var(--sh);overflow:hidden;margin-bottom:14px}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--bg)}
+.ir:last-child{border-bottom:none}
+.ik{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-family:'DM Mono',monospace}
+.iv{font-size:16px;font-weight:600;color:var(--ink)}
+.iv.pv{font-family:'DM Mono',monospace;font-size:20px;letter-spacing:.12em}
+.res-sec{margin-bottom:16px}
+.res-sec-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);font-family:'DM Mono',monospace;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.res-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
+.res-badge.mo{background:var(--gr-l);color:var(--gr)}.res-badge.de{background:var(--or-l);color:var(--or)}.res-badge.re{background:var(--pu-l);color:var(--pu)}
+.res-item{background:#fff;border-radius:10px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px;box-shadow:var(--sh)}
+.res-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.res-dot.mo{background:var(--gr)}.res-dot.de{background:var(--or)}.res-dot.re{background:var(--pu)}
+.res-sec2{font-size:11px;color:var(--ink3);font-family:'DM Mono',monospace;margin-bottom:2px}
+.res-desc{font-size:14px;font-weight:500;color:var(--ink)}
+.wn{background:var(--am-l);border:1px solid #D4A843;border-radius:10px;padding:14px 16px;font-size:15px;color:var(--am);line-height:1.6;margin-bottom:12px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--brand);font-size:15px;font-weight:600;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;margin-bottom:14px}
+.hist-filters{margin-bottom:12px}
+.hist-search-wrap{display:flex;align-items:center;background:var(--wh);border:1.5px solid var(--rule);border-radius:10px;padding:0 14px;margin-bottom:10px;box-shadow:var(--sh)}
+.hist-search-icon{font-size:16px;margin-right:8px;flex-shrink:0}
+.hist-search-input{flex:1;border:none;background:transparent;font-size:16px;font-family:'DM Sans',sans-serif;color:var(--ink);padding:13px 0;outline:none}
+.hist-search-input::placeholder{color:var(--ink3)}
+.hist-date-row{display:flex;gap:8px;align-items:flex-end}
+.hist-date-group{flex:1}
+.hist-date-group label{display:block;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
+.hist-date-input{width:100%;background:var(--wh);border:1.5px solid var(--rule);border-radius:9px;padding:11px 10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);-webkit-appearance:none;outline:none}
+.hist-date-input:focus{border-color:var(--brand)}
+.hist-clear-btn{background:var(--rule);border:none;border-radius:9px;padding:11px 14px;font-size:14px;cursor:pointer;color:var(--ink3);flex-shrink:0;font-family:'DM Sans',sans-serif;font-weight:600}
+.hist-count{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.04em}
+.hist-stats{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.hist-stat{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;font-family:'DM Mono',monospace}
+.hist-stat.de{background:var(--or-l);color:var(--or)}
+.hist-stat.re{background:var(--pu-l);color:var(--pu)}
+.hist-stat.ok{background:var(--gr-l);color:var(--gr)}
+.hist-stat.comp{background:var(--bl-l);color:var(--bl)}
+.hist-item{background:var(--wh);border-radius:12px;box-shadow:var(--sh);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer}
+.hist-item:active{background:var(--bg)}
+.hist-placa{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--ink);letter-spacing:.1em}
+.hist-info{flex:1}
+.hist-meta{font-size:13px;color:var(--ink3);margin-top:2px}
+.hist-badge{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--gr-l);color:var(--gr);font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap}
+.hist-arrow{color:var(--ink3);font-size:18px}
+.hist-empty{text-align:center;padding:40px 20px;color:var(--ink3);font-size:15px}
+.det-section{background:var(--wh);border-radius:12px;box-shadow:var(--sh);overflow:hidden;margin-bottom:12px}
+.det-sec-hdr{background:var(--ink);color:#fff;padding:10px 14px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.det-item{padding:11px 14px;border-bottom:1px solid var(--bg);display:flex;align-items:flex-start;gap:10px}
+.det-item:last-child{border-bottom:none}
+.det-ref{font-family:'DM Mono',monospace;font-size:11px;color:var(--brand);min-width:26px;flex-shrink:0;padding-top:2px}
+.det-desc{font-size:14px;color:var(--ink);font-weight:500}
+.det-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.det-status.montado{background:var(--gr-l);color:var(--gr)}
+.det-status.desmontado{background:var(--or-l);color:var(--or)}
+.det-status.empty{background:var(--rule);color:var(--ink3)}
+.det-rec{font-size:11px;color:var(--pu);font-weight:600;margin-top:3px}
+.det-obs{font-size:12px;color:var(--ink3);font-style:italic;margin-top:2px}
+.det-foto-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--brand);font-weight:600;text-decoration:none;margin-top:4px;margin-right:8px}
+.comp-badge-det{display:inline-flex;align-items:center;gap:6px;background:var(--bl-l);color:var(--bl);border:1px solid #90CAF9;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;margin-bottom:14px}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:24px}
+.modal-overlay.on{display:flex}
+.modal-box{background:#fff;border-radius:20px;padding:28px 24px;max-width:320px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.modal-icon{font-size:40px;text-align:center;margin-bottom:14px}
+.modal-msg{font-size:17px;font-weight:500;color:var(--ink);text-align:center;line-height:1.6;margin-bottom:24px}
+.modal-btn{width:100%;padding:16px;border-radius:12px;border:none;background:var(--brand);color:#fff;font-size:17px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.modal-btn:active{background:var(--brand-d)}
+.ls{display:none;position:fixed;inset:0;z-index:9998;background:rgba(10,10,10,.85);flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.ls.on{display:flex}
+.sp{width:50px;height:50px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--brand);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.lm{font-family:'DM Mono',monospace;font-size:14px;color:rgba(255,255,255,.65);letter-spacing:.05em}
+.sw{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;padding:32px 20px;text-align:center}
+.si{font-size:72px;margin-bottom:20px}
+.st{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:var(--ink);margin-bottom:10px}
+.ss{font-size:15px;color:var(--ink3);max-width:300px;line-height:1.7}
+.sid{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink3);margin-top:20px;padding:10px 18px;background:var(--rule);border-radius:8px}
+.snw{margin-top:28px;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:16px 36px;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="tb1">
+    <div class="brand">
+      <div class="logo" id="logo-wrap">K</div>
+      <div><div class="bn">Checklist Funilaria</div><div class="bs">Desmontagem de Pecas</div></div>
+    </div>
+    <div class="ptag" id="ptag">-</div>
+  </div>
+  <div class="pb-wrap"><div class="pb-fill" id="pf" style="width:0%"></div></div>
+  <div class="tb3"><span class="tbs" id="tbs">INICIO</span><span class="tbp" id="tbp"></span></div>
+</div>
+<div class="scroll-area" id="sa"><div class="pg" id="pg"></div></div>
+<div class="bnav hidden" id="bnav">
+  <button class="nb nb-bk" id="bbk" onclick="goBack()">Voltar</button>
+  <button class="nb nb-nx" id="bnx" onclick="goNext()">Proximo</button>
+</div>
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">&#x26A0;&#xFE0F;</div>
+    <div class="modal-msg" id="modal-msg"></div>
+    <div id="modal-btns-single"><button class="modal-btn" onclick="fecharModal()">OK</button></div>
+    <div id="modal-btns-confirm" style="display:none;gap:10px">
+      <button class="modal-btn" style="background:var(--bg);color:var(--ink2);border:1.5px solid var(--rule);margin-bottom:0" onclick="modalRevisar()">Revisar</button>
+      <button class="modal-btn" style="margin-top:10px" onclick="modalSim()">Sim, pode continuar</button>
+    </div>
+  </div>
+</div>
+<div class="ls" id="ls"><div class="sp"></div><div class="lm" id="lm">Salvando...</div></div>
+
+<script>
+// ── SUPABASE CONFIG ──────────────────────────────────────────────────────────
+var SUPABASE_URL = 'https://ppptbpoptojvqbztuwff.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_lRfU9GXisK51EOvjTYT01w_kRFVbO8c';
+var API         = SUPABASE_URL + '/rest/v1';
+var BUCKET      = 'fotos-checklist';
+var HEADERS     = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': 'Bearer ' + SUPABASE_KEY,
+  'Content-Type': 'application/json'
+};
+
+async function sbSelect(table, params) {
+  var url = API + '/' + table + (params ? '?' + params : '');
+  var res = await fetch(url, { headers: HEADERS });
+  if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
+  return res.json();
+}
+
+async function sbInsert(table, body) {
+  var h = Object.assign({}, HEADERS, { 'Prefer': 'return=representation' });
+  var res = await fetch(API + '/' + table, { method: 'POST', headers: h, body: JSON.stringify(body) });
+  if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
+  var data = await res.json();
+  return Array.isArray(data) ? data[0] : data;
+}
+
+async function uploadFoto(b64, path) {
+  var fetchRes = await fetch(b64);
+  var blob = await fetchRes.blob();
+  var url = SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + path;
+  var res = await fetch(url, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'image/jpeg' },
+    body: blob
+  });
+  if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error('Upload: ' + (e.error || res.statusText)); }
+  return { storagePath: path, url: SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + path };
+}
+
+// ── APP STATE ────────────────────────────────────────────────────────────────
+var TECNICOS = [
+  'RODOLFO OLIVEIRA DARIO','MOABE SILVA SANTOS','CLAUDIO BELO DOS SANTOS',
+  'ADRIAN GAMA DOS SANTOS','STEPHANIE DOS SANTOS PEREIRA','TAUAN COSTA SOUZA',
+  'CLAYTON SANTOS DA SILVA','DOMINGO ANTONIO JIOVANNNY ESCALANTE MEJIA',
+  'LUCAS CHOSEI SESOKO CHELONI','DIEGO DIAS FERNANDES'
+];
+
+var MAX_FOTOS = 2;
+var MAX_FOTOS_PECA = 4;
+
+var CAT = [
+  {s:'Frente',r:'0',d:'Capo'},{s:'Frente',r:'1',d:'Dobradicas e porcas do capo'},
+  {s:'Frente',r:'2',d:'Batentes de ajuste'},{s:'Frente',r:'3',d:'Esguicho e mangueira do limpador'},
+  {s:'Frente',r:'4',d:'Trinco e fechadura do capo'},{s:'Frente',r:'5',d:'Suporte da vareta de sustentacao do capo'},
+  {s:'Frente',r:'6',d:'Farol direito e esquerdo'},{s:'Frente',r:'7',d:'Para-choque'},
+  {s:'Frente',r:'8',d:'Guia direito e esquerdo'},{s:'Frente',r:'9',d:'Logotipo'},
+  {s:'Frente',r:'10',d:'Grade superior e inferior'},{s:'Frente',r:'11',d:'Frisos ou molduras'},
+  {s:'Frente',r:'12',d:'Farol milha ou moldura do farol'},{s:'Frente',r:'13',d:'Aplique do para-choque'},
+  {s:'Frente',r:'14',d:'Defletores'},{s:'Frente',r:'15',d:'Alma e absorvedor de impacto'},
+  {s:'Frente',r:'16',d:'Painel dianteiro'},{s:'Frente',r:'17',d:'Sistema de arrefecimento (radiador)'},
+  {s:'Frente',r:'18',d:'Reservatorio do esguicho'},
+  {s:'Lateral',r:'1',d:'Retrovisor (capa, lente e pisca)'},{s:'Lateral',r:'2',d:'Moldura do para-lama esquerdo e direito'},
+  {s:'Lateral',r:'3',d:'Macaneta externa das portas'},{s:'Lateral',r:'4',d:'Pestanas das portas'},
+  {s:'Lateral',r:'5',d:'Pisca do paralama esquerdo e direito'},{s:'Lateral',r:'6',d:'Maquina de vidro'},
+  {s:'Lateral',r:'7',d:'Limitador da porta'},{s:'Lateral',r:'8',d:'Calotas'},
+  {s:'Traseira',r:'1',d:'Tampa da mala'},{s:'Traseira',r:'2',d:'Logotipo marca/emblema modelo'},
+  {s:'Traseira',r:'3',d:'Vidro da tampa'},{s:'Traseira',r:'4',d:'Spoiler da tampa'},
+  {s:'Traseira',r:'5',d:'Break light (luz de freio)'},{s:'Traseira',r:'6',d:'Lanternas complementar e carroceria'},
+  {s:'Traseira',r:'7',d:'Macaneta/botao abertura tampa'},{s:'Traseira',r:'8',d:'Fechadura da tampa'},
+  {s:'Traseira',r:'9',d:'Trinco da fechadura da tampa'},{s:'Traseira',r:'10',d:'Batente de ajuste'},
+  {s:'Traseira',r:'11',d:'Para-choque'},{s:'Traseira',r:'12',d:'Spoiler do para-choque'},
+  {s:'Traseira',r:'13',d:'Refletor esquerdo e direito'},{s:'Traseira',r:'14',d:'Guia esquerdo e direito'},
+  {s:'Traseira',r:'15',d:'Lanterna de placa'},{s:'Traseira',r:'16',d:'Painel e assoalho'},
+  {s:'Traseira',r:'17',d:'Alma do para-choque'},{s:'Traseira',r:'18',d:'Estepe/chave/macaco/triangulo'},
+  {s:'Traseira',r:'19',d:'Tampao do bagagito'},
+  {s:'Interna',r:'1',d:'Bracos limpadores (para-brisa/vigia)'},{s:'Interna',r:'2',d:'Retrovisor interno'},
+  {s:'Interna',r:'3',d:'Quebra sol esquerdo e direito'},{s:'Interna',r:'4',d:'Buzina'},
+  {s:'Interna',r:'5',d:'Cinto de seguranca'},{s:'Interna',r:'6',d:'Acabamento das portas'},
+  {s:'Interna',r:'7',d:'Comando dos vidros (janelas)'}
+];
+var SECS  = ['Frente','Lateral','Traseira','Interna'];
+var STEPS = ['hdr','Frente','Lateral','Traseira','Interna','pecas','resumo'];
+var ST    = {step:0,placa:'',data:'',td:'',chk:{},pecas:[{o:'',fotos:[]},{o:'',fotos:[]}],complemento:false,mode:'home'};
+CAT.forEach(function(i){ ST.chk[i.s+'_'+i.r]={st:null,rec:false,o:'',fotos:[]}; });
+var _allChecklists = [];
+
+function ky(i){ return i.s+'_'+i.r; }
+function ndone(){ return CAT.filter(function(i){ return ST.chk[ky(i)].st; }).length; }
+function isRec(v){ return v===true||v===1||String(v).toUpperCase()==='TRUE'||String(v).toUpperCase()==='VERDADEIRO'; }
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+var _modalSimFn = null;
+function mostrarModal(msg, icone){
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('modal-icon').innerHTML  = icone || '&#x26A0;&#xFE0F;';
+  document.getElementById('modal-btns-single').style.display = '';
+  document.getElementById('modal-btns-confirm').style.display = 'none';
+  document.getElementById('modal-overlay').classList.add('on');
+}
+function mostrarConfirmacao(msg, icone, fnSim){
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('modal-icon').innerHTML  = icone || '&#x2753;';
+  document.getElementById('modal-btns-single').style.display = 'none';
+  var bc = document.getElementById('modal-btns-confirm');
+  bc.style.display = 'flex'; bc.style.flexDirection = 'column'; bc.style.gap = '10px';
+  _modalSimFn = fnSim;
+  document.getElementById('modal-overlay').classList.add('on');
+}
+function fecharModal(){ document.getElementById('modal-overlay').classList.remove('on'); _modalSimFn = null; }
+function modalRevisar(){ fecharModal(); }
+function modalSim(){ var fn = _modalSimFn; fecharModal(); if(fn) fn(); }
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render(){
+  var p = document.getElementById('pg'); p.innerHTML = '';
+  document.getElementById('sa').scrollTop = 0;
+  if(ST.mode==='home'){ rHome(p); setNav(false); uiTop('INICIO','','-'); return; }
+  if(ST.mode==='hist'){ rHistLoading(p); setNav(false); uiTop('HISTORICO','','-'); return; }
+  if(ST.mode==='det') { rDetLoading(p);  setNav(false); return; }
+  var s = STEPS[ST.step];
+  if(s==='hdr')              rHdr(p);
+  else if(SECS.indexOf(s)>=0) rSec(p,s);
+  else if(s==='pecas')       rPecas(p);
+  else                        rResumo(p);
+  uiSync();
+}
+function uiTop(step,pct,placa){
+  document.getElementById('tbs').textContent  = step;
+  document.getElementById('tbp').textContent  = pct;
+  document.getElementById('ptag').textContent = placa;
+  document.getElementById('pf').style.width   = pct || '0%';
+}
+function setNav(show, isSend){
+  var n = document.getElementById('bnav');
+  if(!show){ n.classList.add('hidden'); return; }
+  n.classList.remove('hidden');
+  var nb = document.getElementById('bnx');
+  if(isSend){ nb.className='nb nb-sd'; nb.textContent='Enviar checklist'; }
+  else       { nb.className='nb nb-nx'; nb.textContent='Proximo'; }
+  document.getElementById('bbk').style.display = '';
+}
+function uiSync(){
+  var s   = STEPS[ST.step];
+  var pct = Math.round(ndone()/CAT.length*100)+'%';
+  var nm  = {hdr:'IDENTIFICACAO',Frente:'FRENTE',Lateral:'LATERAL',Traseira:'TRASEIRA',Interna:'INTERNA',pecas:'PECAS REMOVIDAS',resumo:'RESUMO'};
+  uiTop(nm[s]||s, pct+' concluido', (ST.placa||'-').toUpperCase());
+  setNav(true, s==='resumo');
+}
+
+// ── HOME ─────────────────────────────────────────────────────────────────────
+function rHome(p){
+  p.innerHTML='<div class="home-wrap">'
+    +'<div class="home-title">Checklist Funilaria</div>'
+    +'<div class="home-sub">Selecione uma opcao para continuar</div>'
+    +'<button class="home-btn new" onclick="iniciarNovo()"><div class="home-btn-ico">&#x1F4CB;</div><div><div class="home-btn-title">Novo Checklist</div><div class="home-btn-sub">Iniciar vistoria de desmontagem</div></div></button>'
+    +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico">&#x1F5C2;&#xFE0F;</div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
+  +'</div>';
+}
+function iniciarNovo(){
+  ST.mode='checklist'; ST.step=0;
+  CAT.forEach(function(i){ ST.chk[ky(i)]={st:null,rec:false,o:'',fotos:[]}; });
+  ST.placa=''; ST.data=''; ST.complemento=false;
+  ST.pecas=[{o:'',fotos:[]},{o:'',fotos:[]}];
+  render();
+}
+function voltarHome(){ ST.mode='home'; render(); }
+
+// ── HISTORICO ────────────────────────────────────────────────────────────────
+function verHistorico(){ ST.mode='hist'; render(); }
+
+function rHistLoading(p){
+  p.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
+    +'<button class="back-link" style="margin-bottom:0" onclick="voltarHome()">&#x2190; Voltar</button>'
+    +'<button onclick="verHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px">&#x1F504; Atualizar</button>'
+  +'</div>'
+  +'<div style="text-align:center;padding:30px;color:#888;font-size:15px">Carregando...</div>';
+
+  (async function(){
+    try {
+      var cls = await sbSelect('checklists',
+        'select=id,placa,data,tem_complemento,created_at,tecnicos(nome)&order=created_at.desc');
+
+      if(!cls || cls.length===0){ rHistData(p,[]); return; }
+
+      var ids = cls.map(function(c){ return c.id; }).join(',');
+      var itens = await sbSelect('checklist_itens',
+        'select=checklist_id,desmontado,recuperacao,zona&checklist_id=in.('+ids+')&zona=neq.Pecas');
+
+      var stats = {};
+      (itens||[]).forEach(function(it){
+        if(!stats[it.checklist_id]) stats[it.checklist_id]={desm:0,rec:0,total:0};
+        stats[it.checklist_id].total++;
+        if(it.desmontado)   stats[it.checklist_id].desm++;
+        if(it.recuperacao)  stats[it.checklist_id].rec++;
+      });
+
+      var checklists = cls.map(function(c){
+        return {
+          ID: c.id,
+          Placa: c.placa,
+          Data: c.data ? c.data.split('-').reverse().join('/') : '',
+          Tecnico_Desmontagem: c.tecnicos ? c.tecnicos.nome : '',
+          Status: 'Concluido',
+          _complemento: c.tem_complemento,
+          _desm:  (stats[c.id]||{}).desm  || 0,
+          _rec:   (stats[c.id]||{}).rec   || 0,
+          _total: (stats[c.id]||{}).total || 0
+        };
+      });
+
+      rHistData(p, checklists);
+    } catch(e) {
+      p.innerHTML='<button class="back-link" onclick="voltarHome()">&#x2190; Voltar</button>'
+        +'<div class="hist-empty">Erro ao carregar: '+e.message+'</div>';
+    }
+  })();
+}
+
+function rHistData(p, checklists){
+  _allChecklists = checklists || [];
+  p.innerHTML='<button class="back-link" onclick="voltarHome()">&#x2190; Voltar</button>'
+    +'<div class="hist-filters">'
+      +'<div class="hist-search-wrap"><span class="hist-search-icon">&#x1F50D;</span><input class="hist-search-input" type="text" id="hist-search" placeholder="Buscar por placa ou tecnico..."></div>'
+      +'<div class="hist-date-row"><div class="hist-date-group"><label>De</label><input class="hist-date-input" type="date" id="hist-de"></div><div class="hist-date-group"><label>Ate</label><input class="hist-date-input" type="date" id="hist-ate"></div><button class="hist-clear-btn" onclick="limparFiltros()">&#x2715;</button></div>'
+    +'</div>'
+    +'<div id="hist-list"></div>';
+  document.getElementById('hist-search').addEventListener('input',filtrarHist);
+  document.getElementById('hist-de').addEventListener('change',filtrarHist);
+  document.getElementById('hist-ate').addEventListener('change',filtrarHist);
+  renderHistList(_allChecklists);
+}
+function filtrarHist(){
+  var s=document.getElementById('hist-search'),de=document.getElementById('hist-de'),ate=document.getElementById('hist-ate');
+  if(!s) return;
+  var q=s.value.toUpperCase().trim(),dv=de?de.value:'',av=ate?ate.value:'';
+  var filtered=_allChecklists.filter(function(c){
+    var texto=((c.Placa||'')+' '+(c.Tecnico_Desmontagem||'')).toUpperCase();
+    if(q&&texto.indexOf(q)<0) return false;
+    if(dv||av){ var parts=(c.Data||'').split('/'); if(parts.length===3){ var iso=parts[2]+'-'+parts[1]+'-'+parts[0]; if(dv&&iso<dv) return false; if(av&&iso>av) return false; } }
+    return true;
+  });
+  renderHistList(filtered);
+}
+function limparFiltros(){
+  var s=document.getElementById('hist-search'); if(s) s.value='';
+  var d=document.getElementById('hist-de'); if(d) d.value='';
+  var a=document.getElementById('hist-ate'); if(a) a.value='';
+  renderHistList(_allChecklists);
+}
+function renderHistList(list){
+  var wrap=document.getElementById('hist-list'); if(!wrap) return;
+  if(!list||list.length===0){ wrap.innerHTML='<div class="hist-empty">Nenhum resultado encontrado.</div>'; return; }
+  var html='<div class="hist-count">'+list.length+' checklist'+(list.length!==1?'s':'')+'</div>';
+  list.forEach(function(entry){
+    var id=(entry.ID||'').replace(/'/g,''), placa=(entry.Placa||'-').replace(/'/g,'');
+    var desm=entry._desm||0, rec=entry._rec||0, total=entry._total||0;
+    html+='<div class="hist-item" onclick="verDetalhe(\''+id+'\',\''+placa+'\')"><div class="hist-info"><div class="hist-placa">'+placa+'</div><div class="hist-meta">'+(entry.Data||'')+' &middot; '+(entry.Tecnico_Desmontagem||'')+'</div><div class="hist-stats">';
+    if(desm>0)              html+='<span class="hist-stat de">'+desm+' desmontada'+(desm!==1?'s':'')+'</span>';
+    if(rec>0)               html+='<span class="hist-stat re">'+rec+' recuperacao</span>';
+    if(desm===0&&total>0)   html+='<span class="hist-stat ok">Todas nao desmontadas</span>';
+    if(entry._complemento)  html+='<span class="hist-stat comp">&#x1F527; Complemento</span>';
+    html+='</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0"><span class="hist-badge">Concluido</span><span class="hist-arrow">&#x203A;</span></div></div>';
+  });
+  wrap.innerHTML=html;
+}
+
+// ── DETALHE ──────────────────────────────────────────────────────────────────
+function verDetalhe(id, placa){ ST.mode='det'; ST.detId=id; ST.detPlaca=placa; render(); }
+
+function rDetLoading(p){
+  uiTop('DETALHES','',ST.detPlaca||'-');
+  p.innerHTML='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>'
+    +'<div style="text-align:center;padding:30px;color:#888;font-size:15px">Carregando...</div>';
+  document.getElementById('ls').classList.add('on');
+  document.getElementById('lm').textContent='Carregando...';
+
+  (async function(){
+    try {
+      var cl = await sbSelect('checklists',
+        'select=*,tecnicos(nome)&id=eq.'+ST.detId+'&limit=1');
+      cl = cl && cl[0];
+
+      if(!cl){
+        document.getElementById('ls').classList.remove('on');
+        p.innerHTML='<div style="text-align:center;padding:40px 20px">'
+          +'<div style="font-size:48px;margin-bottom:16px">&#x1F5D1;&#xFE0F;</div>'
+          +'<div style="font-size:17px;font-weight:600;color:var(--ink);margin-bottom:8px">Registro nao encontrado</div>'
+          +'<div style="font-size:14px;color:var(--ink3);margin-bottom:24px">Este checklist foi excluido ou nao esta mais disponivel.</div>'
+          +'<button class="snw" style="font-size:15px;padding:14px 28px" onclick="verHistorico()">Voltar ao historico</button>'
+        +'</div>';
+        return;
+      }
+
+      var itensRaw = await sbSelect('checklist_itens',
+        'select=*,checklist_fotos(url)&checklist_id=eq.'+ST.detId);
+
+      document.getElementById('ls').classList.remove('on');
+
+      var itensNormais = (itensRaw||[]).filter(function(it){ return it.zona!=='Pecas'; }).map(function(it){
+        var cat = CAT.find(function(c){ return c.s===it.zona && c.d===it.item; });
+        return {
+          Ref: cat ? cat.r : '',
+          Descricao: it.item,
+          Secao: it.zona,
+          Status: it.desmontado ? 'desmontado' : 'montado',
+          Recuperacao: it.recuperacao,
+          Observacao: it.observacao || '',
+          Foto: (it.checklist_fotos||[]).map(function(f){ return f.url; }).join('|')
+        };
+      });
+
+      var pecas = (itensRaw||[]).filter(function(it){ return it.zona==='Pecas'; }).map(function(it){
+        return {
+          Descricao_Item: it.item,
+          Observacao: it.observacao || '',
+          Foto: (it.checklist_fotos||[]).map(function(f){ return f.url; }).join('|')
+        };
+      });
+
+      var mappedCl = {
+        Placa: cl.placa,
+        Data: cl.data ? cl.data.split('-').reverse().join('/') : '',
+        Tecnico_Desmontagem: cl.tecnicos ? cl.tecnicos.nome : '',
+        Complemento: cl.tem_complemento
+      };
+
+      rDetData(p, { checklist: mappedCl, itens: itensNormais, pecas: pecas });
+    } catch(e) {
+      document.getElementById('ls').classList.remove('on');
+      p.innerHTML='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>'
+        +'<div class="hist-empty">Erro de conexao: '+e.message+'</div>';
+    }
+  })();
+}
+
+function rDetData(p, res){
+  var c=res.checklist, itens=res.itens, pecas=res.pecas;
+  var mo=0,de=0,re=0;
+  itens.forEach(function(it){ if(it.Status==='montado') mo++; else if(it.Status==='desmontado'){ de++; if(isRec(it.Recuperacao)) re++; } });
+  var temComplemento=isRec(c.Complemento);
+  var h='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>';
+  if(temComplemento) h+='<div class="comp-badge-det">&#x1F527; Este carro teve complemento</div>';
+  h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Nao desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+re+'</div><div class="slbl">Recuperacao</div></div></div>';
+  h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(c.Placa||'-')+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(c.Data||'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(c.Tecnico_Desmontagem||'-')+'</span></div><div class="ir"><span class="ik">Complemento</span><span class="iv" style="color:'+(temComplemento?'var(--bl)':'var(--ink3)')+'">'+(temComplemento?'Sim':'Nao')+'</span></div></div>';
+  var recItens=itens.filter(function(it){ return isRec(it.Recuperacao); });
+  h+='<div class="res-sec"><div class="res-sec-title">Recuperacao';
+  if(recItens.length>0){ h+=' <span class="res-badge re">'+recItens.length+'</span></div>'; recItens.forEach(function(it){ h+='<div class="res-item"><div class="res-dot re"></div><div><div class="res-sec2">'+it.Secao+' &middot; '+it.Ref+'</div><div class="res-desc">'+it.Descricao+'</div></div></div>'; }); }
+  else{ h+='</div><div style="background:#fff;border-radius:10px;padding:12px 14px;font-size:14px;color:#888;box-shadow:var(--sh)">Nenhuma peca para recuperacao.</div>'; }
+  h+='</div>';
+  ['Frente','Lateral','Traseira','Interna'].forEach(function(sec){
+    var si=itens.filter(function(it){ return it.Secao===sec; }); if(!si.length) return;
+    var ms=si.filter(function(i){ return i.Status==='montado'; }).length;
+    var ds=si.filter(function(i){ return i.Status==='desmontado'; }).length;
+    h+='<div class="det-section"><div class="det-sec-hdr"><span>'+sec.toUpperCase()+'</span><span style="font-size:10px;opacity:.6">'+ms+' nao desm. &middot; '+ds+' desmontados</span></div>';
+    si.forEach(function(it){
+      var st=it.Status||'', stCls=st==='montado'?'montado':st==='desmontado'?'desmontado':'empty';
+      var stLbl=st==='montado'?'Nao desmontado':st==='desmontado'?'Desmontado':'-';
+      var fotos=(it.Foto||'').split('|').filter(function(u){ return u.trim(); });
+      h+='<div class="det-item"><span class="det-ref">'+it.Ref+'</span><div style="flex:1"><div class="det-desc">'+it.Descricao+'</div>'+(isRec(it.Recuperacao)?'<div class="det-rec">Recuperacao</div>':'')+(it.Observacao?'<div class="det-obs">'+it.Observacao+'</div>':'');
+      fotos.forEach(function(u,fi){ h+='<a class="det-foto-link" href="'+u.trim()+'" target="_blank">Foto '+(fi+1)+'</a>'; });
+      h+='</div><span class="det-status '+stCls+'">'+stLbl+'</span></div>';
+    });
+    h+='</div>';
+  });
+  if(pecas&&pecas.length){
+    h+='<div class="det-section"><div class="det-sec-hdr">PECAS REMOVIDAS</div>';
+    pecas.forEach(function(pc){
+      var pfUrls=(pc.Foto||'').split('|').filter(function(u){ return u.trim(); });
+      h+='<div class="det-item"><div style="flex:1"><div class="det-desc">'+(pc.Descricao_Item||'')+'</div>'+(pc.Observacao?'<div class="det-obs">'+pc.Observacao+'</div>':'');
+      pfUrls.forEach(function(u,fi){ h+='<a class="det-foto-link" href="'+u.trim()+'" target="_blank">Foto '+(fi+1)+'</a>'; });
+      h+='</div></div>';
+    });
+    h+='</div>';
+  }
+  p.innerHTML=h; uiTop('DETALHES','',c.Placa||'-');
+}
+
+// ── IDENTIFICACAO ────────────────────────────────────────────────────────────
+function rHdr(p){
+  if(!ST.data){ var _n=new Date(); ST.data=new Date(_n.getTime()-3*60*60*1000).toISOString().split('T')[0]; }
+  var opts=TECNICOS.map(function(t){ return '<option value="'+t+'"'+(ST.td===t?' selected':'')+'>'+t+'</option>'; }).join('');
+  var div=document.createElement('div');
+  div.innerHTML='<div class="card">'
+    +'<div class="f2"><div><label>Placa *</label><input class="ip" type="text" id="i-pl" placeholder="ABC1234" maxlength="8"></div><div><label>Data *</label><input type="date" id="i-dt"></div></div>'
+    +'<div class="fld"><label>Tecnico *</label><select class="tec-select" id="i-td"><option value="">Selecione o tecnico...</option>'+opts+'</select></div>'
+  +'</div>'
+  +'<div class="notice">Em caso de ausencia de peca, solicitar ao Facilitador o complemento.</div>';
+  p.appendChild(div);
+  document.getElementById('i-pl').value=ST.placa;
+  document.getElementById('i-dt').value=ST.data;
+  document.getElementById('i-pl').oninput=function(){ ST.placa=this.value.toUpperCase(); this.value=ST.placa; uiSync(); };
+  document.getElementById('i-dt').oninput=function(){ ST.data=this.value; };
+  document.getElementById('i-td').onchange=function(){ ST.td=this.value; };
+}
+
+// ── ITENS ────────────────────────────────────────────────────────────────────
+function renderFotos(kk){
+  var cc=ST.chk[kk], wrap=document.getElementById('fw-'+kk); if(!wrap) return;
+  var html='';
+  cc.fotos.forEach(function(b64,fi){ html+='<div class="foto-thumb-wrap"><img class="foto-thumb" src="'+b64+'"><button class="foto-del-btn" onclick="delFotoItem(\''+kk+'\','+fi+')">&#x2715;</button></div>'; });
+  if(cc.fotos.length<MAX_FOTOS){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'fi-'+kk+'\').click()">&#x1F4F7; Foto '+(cc.fotos.length+1)+'/'+MAX_FOTOS+'</button><input type="file" id="fi-'+kk+'" accept="image/*" capture="environment" onchange="addFotoItem(\''+kk+'\',this)">'; }
+  wrap.innerHTML=html;
+  var obrig=document.getElementById('fo-'+kk); if(obrig) obrig.classList.remove('show');
+}
+function rSec(p,sec){
+  var its=CAT.filter(function(i){ return i.s===sec; });
+  var dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
+  var hdr=document.createElement('div'); hdr.className='shdr';
+  hdr.innerHTML='<span class="shn">'+(SECS.indexOf(sec)+1)+'/4</span><span class="sht">'+sec+' do veiculo</span><span class="shp" id="sp">'+dn+'/'+its.length+'</span>';
+  p.appendChild(hdr);
+  its.forEach(function(it){
+    var kk=ky(it),cc=ST.chk[kk],d=document.createElement('div');
+    d.className='itm '+(cc.st||''); d.id='cd-'+kk;
+    d.innerHTML='<div class="itop"><span class="iref">'+it.r+'</span><span class="idesc">'+it.d+'</span><span class="idot '+(cc.st||'')+'" id="dt-'+kk+'"></span></div>'
+      +'<div class="sbr">'
+        +'<button class="sb '+(cc.st==='montado'?'mont':'')+'" data-k="'+kk+'" data-v="montado" onclick="setSt(this)"><span class="ic">&#x2713;</span>Nao desmontado</button>'
+        +'<button class="sb '+(cc.st==='desmontado'?'desm':'')+'" data-k="'+kk+'" data-v="desmontado" onclick="setSt(this)"><span class="ic">&#x1F527;</span>Desmontado</button>'
+      +'</div>'
+      +'<div class="xtr '+(cc.st==='desmontado'?'open':'')+'" id="ex-'+kk+'">'
+        +'<div class="rec-toggle '+(cc.rec?'on':'')+'" id="rt-'+kk+'" onclick="toggleRec(\''+kk+'\')">'
+          +'<span class="rec-icon">&#x1F504;</span><div class="rec-text"><div class="rec-title">Peca vai para recuperacao</div><div class="rec-sub">Toque para marcar/desmarcar</div></div>'
+          +'<div class="rec-check" id="rc-'+kk+'">'+(cc.rec?'&#x2713;':'')+'</div>'
+        +'</div>'
+        +'<textarea rows="2" placeholder="Observacao..." oninput="ST.chk[\''+kk+'\'].o=this.value">'+(cc.o||'')+'</textarea>'
+        +'<div class="fotos-wrap" id="fw-'+kk+'"></div>'
+        +'<div class="foto-obrig" id="fo-'+kk+'">Foto obrigatoria para itens desmontados</div>'
+      +'</div>';
+    p.appendChild(d);
+    renderFotos(kk);
+  });
+}
+function setSt(btn){
+  var kk=btn.dataset.k,v=btn.dataset.v,cc=ST.chk[kk];
+  cc.st=cc.st===v?null:v; if(cc.st!=='desmontado') cc.rec=false;
+  btn.closest('.sbr').querySelectorAll('.sb').forEach(function(b){ b.className='sb'; if(b.dataset.v==='montado'&&cc.st==='montado') b.className='sb mont'; if(b.dataset.v==='desmontado'&&cc.st==='desmontado') b.className='sb desm'; });
+  document.getElementById('cd-'+kk).className='itm '+(cc.st||'');
+  document.getElementById('dt-'+kk).className='idot '+(cc.st||'');
+  var ex=document.getElementById('ex-'+kk); if(cc.st==='desmontado') ex.classList.add('open'); else ex.classList.remove('open');
+  var sec=kk.split('_')[0],its=CAT.filter(function(i){ return i.s===sec; }),dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
+  var sp=document.getElementById('sp'); if(sp) sp.textContent=dn+'/'+its.length;
+  uiSync();
+}
+function toggleRec(kk){ var cc=ST.chk[kk]; cc.rec=!cc.rec; var rt=document.getElementById('rt-'+kk),rc=document.getElementById('rc-'+kk); if(cc.rec){ rt.classList.add('on'); rc.innerHTML='&#x2713;'; }else{ rt.classList.remove('on'); rc.innerHTML=''; } }
+function compress(file,cb){ var r=new FileReader(); r.onload=function(e){ var img=new Image(); img.onload=function(){ var M=900,w=img.width,h=img.height; if(w>M){h=h*M/w;w=M;} if(h>M){w=w*M/h;h=M;} var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',.75)); }; img.src=e.target.result; }; r.readAsDataURL(file); }
+function addFotoItem(kk,inp){ if(!inp.files||!inp.files[0]) return; var cc=ST.chk[kk]; if(cc.fotos.length>=MAX_FOTOS) return; compress(inp.files[0],function(b64){ cc.fotos.push(b64); renderFotos(kk); }); }
+function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); }
+
+// ── PECAS REMOVIDAS ──────────────────────────────────────────────────────────
+function renderFotosPeca(i){
+  var pec=ST.pecas[i], wrap=document.getElementById('pfw-'+i); if(!wrap) return;
+  var fotos=pec.fotos||[], html='';
+  fotos.forEach(function(b64,fi){ html+='<div class="foto-thumb-wrap"><img class="foto-thumb" src="'+b64+'"><button class="foto-del-btn" onclick="dFotoP('+i+','+fi+')">&#x2715;</button></div>'; });
+  if(fotos.length<MAX_FOTOS_PECA){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'pfi-'+i+'\').click()">&#x1F4F7; Foto '+(fotos.length+1)+'/'+MAX_FOTOS_PECA+'</button><input type="file" id="pfi-'+i+'" accept="image/*" capture="environment" onchange="hFotoP('+i+',this)">'; }
+  wrap.innerHTML=html;
+}
+function rPecas(p){
+  var hdr=document.createElement('div'); hdr.className='shdr';
+  hdr.innerHTML='<span class="shn">5/5</span><span class="sht">Pecas Removidas</span>';
+  p.appendChild(hdr);
+  var lbls=[
+    'Caixas dentro do carro com pecas desmontadas (identificar com a placa e lacrar)',
+    'Pecas removidas fora do carro (identificadas com etiqueta e armazenadas adequadamente)'
+  ];
+  lbls.forEach(function(lbl,i){
+    var pec=ST.pecas[i], d=document.createElement('div'); d.className='pc';
+    d.innerHTML='<div class="pn">Item '+(i+1)+'</div>'
+      +'<div class="pd">'+lbl+'</div>'
+      +'<textarea rows="2" placeholder="Descrever aqui..." oninput="ST.pecas['+i+'].o=this.value">'+(pec.o||'')+'</textarea>'
+      +'<div class="fotos-wrap" id="pfw-'+i+'"></div>';
+    p.appendChild(d);
+    renderFotosPeca(i);
+  });
+}
+function hFotoP(i,inp){ if(!inp.files||!inp.files[0]) return; if(!ST.pecas[i].fotos) ST.pecas[i].fotos=[]; if(ST.pecas[i].fotos.length>=MAX_FOTOS_PECA) return; compress(inp.files[0],function(b){ ST.pecas[i].fotos.push(b); renderFotosPeca(i); }); }
+function dFotoP(i,idx){ ST.pecas[i].fotos.splice(idx,1); renderFotosPeca(i); }
+
+// ── RESUMO ───────────────────────────────────────────────────────────────────
+function toggleComplemento(){
+  ST.complemento=!ST.complemento;
+  var t=document.getElementById('comp-toggle'), c=document.getElementById('comp-check');
+  if(t) t.className='comp-toggle'+(ST.complemento?' on':'');
+  if(c) c.innerHTML=ST.complemento?'&#x2713;':'';
+}
+function rResumo(p){
+  var mo=[],de=[],re=[],pend=[];
+  CAT.forEach(function(i){ var cc=ST.chk[ky(i)]; if(cc.st==='montado') mo.push(i); else if(cc.st==='desmontado'){ de.push(i); if(cc.rec) re.push(i); }else pend.push(i); });
+  var h='<div class="s4">'
+    +'<div class="sbox"><div class="snum t">'+CAT.length+'</div><div class="slbl">Total</div></div>'
+    +'<div class="sbox"><div class="snum mo">'+mo.length+'</div><div class="slbl">Nao desm.</div></div>'
+    +'<div class="sbox"><div class="snum de">'+de.length+'</div><div class="slbl">Desmontado</div></div>'
+    +'<div class="sbox"><div class="snum re">'+re.length+'</div><div class="slbl">Recuperacao</div></div>'
+  +'</div>';
+  if(pend.length>0) h+='<div class="wn">'+pend.length+' item(ns) sem avaliacao.</div>';
+  h+='<div class="comp-toggle'+(ST.complemento?' on':'')+'" id="comp-toggle" onclick="toggleComplemento()">'
+    +'<span class="comp-icon">&#x1F527;</span>'
+    +'<div class="comp-text"><div class="comp-title">Esse carro teve complemento?</div><div class="comp-sub">Toque para marcar/desmarcar</div></div>'
+    +'<div class="comp-check" id="comp-check">'+(ST.complemento?'&#x2713;':'')+'</div>'
+  +'</div>';
+  h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(ST.placa||'-').toUpperCase()+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(ST.data?ST.data.split('-').reverse().join('/'):'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(ST.td||'-')+'</span></div></div>';
+  if(re.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Recuperacao <span class="res-badge re">'+re.length+'</span></div>'; re.forEach(function(it){ h+='<div class="res-item"><div class="res-dot re"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div></div></div>'; }); h+='</div>'; }
+  if(de.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Desmontadas <span class="res-badge de">'+de.length+'</span></div>'; de.forEach(function(it){ var cc=ST.chk[ky(it)]; h+='<div class="res-item"><div class="res-dot de"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div>'+(cc.o?'<div style="font-size:12px;color:#888;font-style:italic;margin-top:2px">'+cc.o+'</div>':'')+'<div style="font-size:11px;color:#888;margin-top:2px">'+cc.fotos.length+' foto(s)</div></div></div>'; }); h+='</div>'; }
+  if(mo.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Nao desmontadas <span class="res-badge mo">'+mo.length+'</span></div>'; mo.forEach(function(it){ h+='<div class="res-item"><div class="res-dot mo"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div></div></div>'; }); h+='</div>'; }
+  p.innerHTML=h;
+}
+
+// ── NAVEGACAO ────────────────────────────────────────────────────────────────
+function goNext(){
+  var s=STEPS[ST.step];
+  if(s==='hdr'){ if(!ST.placa||!ST.data||!ST.td){ mostrarModal('Preencha a Placa, a Data e confirme o Tecnico.','&#x1F4CB;'); return; } }
+  if(SECS.indexOf(s)>=0){
+    var its=CAT.filter(function(i){ return i.s===s; });
+    var pending=its.filter(function(i){ return !ST.chk[ky(i)].st; });
+    function prosseguirSecao(){
+      var semFoto=its.filter(function(i){ var cc=ST.chk[ky(i)]; return cc.st==='desmontado'&&cc.fotos.length===0; });
+      if(semFoto.length>0){
+        semFoto.forEach(function(it){ var fo=document.getElementById('fo-'+ky(it)); if(fo) fo.classList.add('show'); });
+        var first=document.getElementById('cd-'+ky(semFoto[0])); if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
+        mostrarModal('Registre pelo menos 1 foto para cada item desmontado. ('+semFoto.length+' pendente(s))','&#x1F4F7;');
+        return;
+      }
+      ST.step++; render();
+    }
+    if(pending.length===its.length){
+      mostrarConfirmacao('Nenhum item foi avaliado nesta secao.\nConfirma que nenhum foi desmontado?','&#x2753;',function(){
+        its.forEach(function(it){ ST.chk[ky(it)].st='montado'; });
+        prosseguirSecao();
+      });
+      return;
+    }
+    if(pending.length>0){
+      mostrarConfirmacao(pending.length+' item(ns) ainda sem avaliacao.\nOs itens pendentes nao foram desmontados?','&#x26A0;&#xFE0F;',function(){
+        pending.forEach(function(it){ ST.chk[ky(it)].st='montado'; });
+        prosseguirSecao();
+      });
+      return;
+    }
+    prosseguirSecao();
+    return;
+  }
+  if(s==='resumo'){ enviar(); return; }
+  ST.step++; render();
+}
+function goBack(){ if(ST.step===0){ ST.mode='home'; render(); return; } ST.step--; render(); }
+
+// ── ENVIAR ───────────────────────────────────────────────────────────────────
+var PECAS_LABELS = [
+  'Caixas dentro do carro com pecas desmontadas (identificar com a placa e lacrar)',
+  'Pecas removidas fora do carro (identificadas com etiqueta e armazenadas adequadamente)'
+];
+
+function loading(msg){ document.getElementById('ls').classList.add('on'); document.getElementById('lm').textContent=msg||'Salvando...'; }
+function loadingOff(){ document.getElementById('ls').classList.remove('on'); }
+
+function enviar(){
+  (async function(){
+    try {
+      loading('Buscando tecnico...');
+
+      var tecs = await sbSelect('tecnicos', 'select=id&nome=eq.'+encodeURIComponent(ST.td));
+      if(!tecs||!tecs[0]) throw new Error('Tecnico nao encontrado: '+ST.td);
+      var tecId = tecs[0].id;
+
+      loading('Criando registro...');
+      var cl = await sbInsert('checklists', {
+        placa: ST.placa,
+        data: ST.data,
+        tecnico_id: tecId,
+        tem_complemento: ST.complemento || false
+      });
+
+      // Inserir itens do checklist
+      for(var idx=0; idx<CAT.length; idx++){
+        var it = CAT[idx];
+        var cc = ST.chk[ky(it)];
+        loading('Salvando itens... ('+(idx+1)+'/'+CAT.length+')');
+
+        var item = await sbInsert('checklist_itens', {
+          checklist_id: cl.id,
+          zona: it.s,
+          item: it.d,
+          situacao: cc.st==='montado' ? 'ok' : cc.st==='desmontado' ? 'nao_ok' : null,
+          desmontado: cc.st==='desmontado',
+          recuperacao: cc.rec || false,
+          observacao: cc.o || null
+        });
+
+        for(var fi=0; fi<(cc.fotos||[]).length; fi++){
+          loading('Enviando foto '+(fi+1)+' de '+it.d+'...');
+          var path = cl.id+'/'+item.id+'/'+fi+'.jpg';
+          var fResult = await uploadFoto(cc.fotos[fi], path);
+          await sbInsert('checklist_fotos', { item_id: item.id, storage_path: fResult.storagePath, url: fResult.url });
+        }
+      }
+
+      // Inserir pecas removidas
+      for(var pi=0; pi<ST.pecas.length; pi++){
+        var pec = ST.pecas[pi];
+        loading('Salvando peca '+(pi+1)+'...');
+        var pitem = await sbInsert('checklist_itens', {
+          checklist_id: cl.id,
+          zona: 'Pecas',
+          item: PECAS_LABELS[pi],
+          observacao: pec.o || null
+        });
+
+        for(var pfi=0; pfi<(pec.fotos||[]).length; pfi++){
+          loading('Enviando foto da peca '+(pi+1)+'...');
+          var pPath = cl.id+'/'+pitem.id+'/'+pfi+'.jpg';
+          var pfResult = await uploadFoto(pec.fotos[pfi], pPath);
+          await sbInsert('checklist_fotos', { item_id: pitem.id, storage_path: pfResult.storagePath, url: pfResult.url });
+        }
+      }
+
+      loadingOff();
+      sucesso(cl.id);
+
+    } catch(e) {
+      loadingOff();
+      mostrarModal('Erro ao salvar: '+e.message, '&#x274C;');
+    }
+  })();
+}
+
+function sucesso(id){
+  setNav(false);
+  document.getElementById('pg').innerHTML='<div class="sw"><div class="si">&#x2705;</div><div class="st">Checklist enviado!</div><div class="ss">Dados salvos no banco e fotos no Supabase Storage.</div><div class="sid">ID: '+id+'</div><button class="snw" onclick="voltarHome()">Voltar ao inicio</button></div>';
+  uiTop('CONCLUIDO','','');
+}
+
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js');
+}
+</script>
+</body>
+</html>

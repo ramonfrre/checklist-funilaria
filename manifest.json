@@ -1,0 +1,17 @@
+{
+  "name": "Checklist Funilaria",
+  "short_name": "Checklist",
+  "description": "Vistoria de desmontagem de pecas",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F8F5F5",
+  "theme_color": "#ff355a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
