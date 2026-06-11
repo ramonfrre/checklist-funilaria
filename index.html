@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Checklist Funilaria">
@@ -22,7 +21,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);disp
 .topbar{background:#ff355a;padding:14px 16px 10px;flex-shrink:0}
 .tb1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .brand{display:flex;align-items:center;gap:12px}
-.logo{width:52px;height:52px;border-radius:10px;background:#ff355a;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:18px;color:#fff;font-weight:700;flex-shrink:0;overflow:hidden}
+.logo{width:52px;height:52px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:18px;color:#ff355a;font-weight:700;flex-shrink:0}
 .bn{font-family:'Sora',sans-serif;font-size:16px;color:#fff;font-weight:700}
 .bs{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
 .ptag{font-family:'DM Mono',monospace;font-size:14px;background:rgba(255,255,255,.2);color:#fff;padding:7px 12px;border-radius:8px;letter-spacing:.1em;font-weight:700;min-width:68px;text-align:center;border:1.5px solid rgba(255,255,255,.4)}
@@ -192,19 +191,36 @@ input[type=file]{display:none}
 .ss{font-size:15px;color:var(--ink3);max-width:300px;line-height:1.7}
 .sid{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink3);margin-top:20px;padding:10px 18px;background:var(--rule);border-radius:8px}
 .snw{margin-top:28px;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:16px 36px;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* LOGIN */
+.login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:32px 24px;background:var(--bg)}
+.login-logo{width:80px;height:80px;border-radius:20px;background:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:24px;overflow:hidden}
+.login-logo img{width:100%;height:100%;object-fit:contain;padding:8px;mix-blend-mode:screen}
+.login-title{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:var(--ink);margin-bottom:8px;text-align:center}
+.login-sub{font-size:15px;color:var(--ink3);text-align:center;margin-bottom:40px;line-height:1.6}
+.login-btn{display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;border:1.5px solid var(--rule);border-radius:14px;padding:16px 24px;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;width:100%;max-width:320px;font-family:'DM Sans',sans-serif;box-shadow:var(--sh)}
+.login-btn:active{background:var(--bg)}
+.login-btn svg{width:24px;height:24px;flex-shrink:0}
+.login-error{font-size:13px;color:var(--rd);text-align:center;margin-top:16px;display:none}
+.login-error.show{display:block}
+.logout-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:8px;color:#fff;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;padding:6px 12px;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="topbar">
   <div class="tb1">
     <div class="brand">
-      <div class="logo" id="logo-wrap"><img src="./Logo_03.png" alt="Kovi" style="width:100%;height:100%;object-fit:contain;padding:5px;mix-blend-mode:screen"></div>
+      <div class="logo" id="logo-wrap">K</div>
       <div><div class="bn">Checklist Funilaria</div><div class="bs">Desmontagem de Pecas</div></div>
     </div>
     <div class="ptag" id="ptag">-</div>
   </div>
+  <div id="logout-area" style="display:none;justify-content:flex-end;margin-bottom:6px">
+    <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+  </div>
+  <div id="topbar-content">
   <div class="pb-wrap"><div class="pb-fill" id="pf" style="width:0%"></div></div>
   <div class="tb3"><span class="tbs" id="tbs">INICIO</span><span class="tbp" id="tbp"></span></div>
+  </div>
 </div>
 <div class="scroll-area" id="sa"><div class="pg" id="pg"></div></div>
 <div class="bnav hidden" id="bnav">
@@ -236,15 +252,132 @@ var HEADERS     = {
   'Content-Type': 'application/json'
 };
 
+// ── AUTH ─────────────────────────────────────────────────────────────────────
+var _session = null;
+var _tecnico = null; // { id, nome, email }
+
+function getAuthHeaders() {
+  var token = _session ? _session.access_token : SUPABASE_KEY;
+  return {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + token,
+    'Content-Type': 'application/json'
+  };
+}
+
+function renderLogin() {
+  document.getElementById('sa').style.display = 'none';
+  document.getElementById('bnav').style.display = 'none';
+  document.getElementById('topbar-content').style.display = 'none';
+  document.getElementById('logout-area').style.display = 'none';
+  var body = document.body;
+  var loginDiv = document.getElementById('login-screen');
+  if (!loginDiv) {
+    loginDiv = document.createElement('div');
+    loginDiv.id = 'login-screen';
+    body.appendChild(loginDiv);
+  }
+  loginDiv.style.display = 'flex';
+  loginDiv.innerHTML = '<div class="login-wrap">'
+    + '<div class="login-logo"><img src="./Logo_03.png" alt="Kovi"></div>'
+    + '<div class="login-title">Checklist Funilaria</div>'
+    + '<div class="login-sub">Acesse com sua conta Kovi para continuar</div>'
+    + '<button class="login-btn" onclick="loginGoogle()">'
+    + '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>'
+    + 'Entrar com Google'
+    + '</button>'
+    + '<div class="login-error" id="login-error">Acesso negado. Use sua conta @kovi.com.br.</div>'
+    + '</div>';
+}
+
+async function loginGoogle() {
+  await fetch(SUPABASE_URL + '/auth/v1/signout', {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+  }).catch(function(){});
+
+  var redirect = window.location.href.split('?')[0].split('#')[0];
+  window.location.href = SUPABASE_URL + '/auth/v1/authorize'
+    + '?provider=google'
+    + '&redirect_to=' + encodeURIComponent(redirect)
+    + '&hd=kovi.com.br';
+}
+
+async function fazerLogout() {
+  await fetch(SUPABASE_URL + '/auth/v1/signout', {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (_session ? _session.access_token : SUPABASE_KEY) }
+  }).catch(function(){});
+  _session = null;
+  _tecnico = null;
+  renderLogin();
+}
+
+async function iniciarSessao() {
+  // Tenta pegar sessão do hash da URL (retorno do OAuth)
+  var hash = window.location.hash;
+  if (hash && hash.includes('access_token')) {
+    var params = new URLSearchParams(hash.replace('#', ''));
+    _session = {
+      access_token:  params.get('access_token'),
+      refresh_token: params.get('refresh_token')
+    };
+    history.replaceState(null, '', window.location.pathname);
+  }
+
+  // Se não tem sessão, mostra login
+  if (!_session || !_session.access_token) {
+    renderLogin();
+    return;
+  }
+
+  // Pega o e-mail do usuário logado
+  var userRes = await fetch(SUPABASE_URL + '/auth/v1/user', {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + _session.access_token }
+  });
+  if (!userRes.ok) { renderLogin(); return; }
+  var user = await userRes.json();
+  var email = (user.email || '').toLowerCase();
+
+  // Verifica se o e-mail está na tabela de técnicos
+  var tecs = await fetch(API + '/tecnicos?select=id,nome,email&email=eq.' + encodeURIComponent(email), {
+    headers: getAuthHeaders()
+  }).then(function(r){ return r.json(); });
+
+  if (!tecs || !tecs[0]) {
+    var errEl = document.getElementById('login-error');
+    if (errEl) { errEl.classList.add('show'); }
+    renderLogin();
+    setTimeout(function(){
+      var e = document.getElementById('login-error');
+      if(e) e.classList.add('show');
+    }, 100);
+    await fazerLogout();
+    return;
+  }
+
+  _tecnico = tecs[0];
+  ST.td = _tecnico.nome;
+
+  // Mostra o app
+  var loginDiv = document.getElementById('login-screen');
+  if (loginDiv) loginDiv.style.display = 'none';
+  document.getElementById('sa').style.display = '';
+  document.getElementById('topbar-content').style.display = '';
+  document.getElementById('logout-area').style.display = 'flex';
+
+  render();
+}
+
 async function sbSelect(table, params) {
   var url = API + '/' + table + (params ? '?' + params : '');
-  var res = await fetch(url, { headers: HEADERS });
+  var res = await fetch(url, { headers: getAuthHeaders() });
   if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
   return res.json();
 }
 
 async function sbInsert(table, body) {
-  var h = Object.assign({}, HEADERS, { 'Prefer': 'return=representation' });
+  var h = Object.assign({}, getAuthHeaders(), { 'Prefer': 'return=representation' });
   var res = await fetch(API + '/' + table, { method: 'POST', headers: h, body: JSON.stringify(body) });
   if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
   var data = await res.json();
@@ -255,9 +388,10 @@ async function uploadFoto(b64, path) {
   var fetchRes = await fetch(b64);
   var blob = await fetchRes.blob();
   var url = SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + path;
+  var token = _session ? _session.access_token : SUPABASE_KEY;
   var res = await fetch(url, {
     method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'image/jpeg' },
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'image/jpeg' },
     body: blob
   });
   if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error('Upload: ' + (e.error || res.statusText)); }
@@ -605,11 +739,13 @@ function rDetData(p, res){
 // ── IDENTIFICACAO ────────────────────────────────────────────────────────────
 function rHdr(p){
   if(!ST.data){ var _n=new Date(); ST.data=new Date(_n.getTime()-3*60*60*1000).toISOString().split('T')[0]; }
-  var opts=TECNICOS.map(function(t){ return '<option value="'+t+'"'+(ST.td===t?' selected':'')+'>'+t+'</option>'; }).join('');
+  var tecField = _tecnico
+    ? '<div class="fld"><label>Tecnico</label><div style="background:var(--bg);border:1.5px solid var(--rule);border-radius:9px;padding:14px;font-size:16px;color:var(--ink);font-weight:500">'+_tecnico.nome+'</div></div>'
+    : '<div class="fld"><label>Tecnico *</label><select class="tec-select" id="i-td"><option value="">Selecione o tecnico...</option>'+TECNICOS.map(function(t){ return '<option value="'+t+'"'+(ST.td===t?' selected':'')+'>'+t+'</option>'; }).join('')+'</select></div>';
   var div=document.createElement('div');
   div.innerHTML='<div class="card">'
     +'<div class="f2"><div><label>Placa *</label><input class="ip" type="text" id="i-pl" placeholder="ABC1234" maxlength="8"></div><div><label>Data *</label><input type="date" id="i-dt"></div></div>'
-    +'<div class="fld"><label>Tecnico *</label><select class="tec-select" id="i-td"><option value="">Selecione o tecnico...</option>'+opts+'</select></div>'
+    +tecField
   +'</div>'
   +'<div class="notice">Em caso de ausencia de peca, solicitar ao Facilitador o complemento.</div>';
   p.appendChild(div);
@@ -617,7 +753,7 @@ function rHdr(p){
   document.getElementById('i-dt').value=ST.data;
   document.getElementById('i-pl').oninput=function(){ ST.placa=this.value.toUpperCase(); this.value=ST.placa; uiSync(); };
   document.getElementById('i-dt').oninput=function(){ ST.data=this.value; };
-  document.getElementById('i-td').onchange=function(){ ST.td=this.value; };
+  var sel=document.getElementById('i-td'); if(sel) sel.onchange=function(){ ST.td=this.value; };
 }
 
 // ── ITENS ────────────────────────────────────────────────────────────────────
@@ -854,7 +990,11 @@ function sucesso(id){
   uiTop('CONCLUIDO','','');
 }
 
-render();
+// Oculta app até autenticar
+document.getElementById('sa').style.display = 'none';
+document.getElementById('topbar-content').style.display = 'none';
+document.getElementById('logout-area').style.display = 'none';
+iniciarSessao();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./service-worker.js');
