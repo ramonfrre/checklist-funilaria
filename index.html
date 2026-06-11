@@ -289,9 +289,12 @@ function renderLogin() {
   document.getElementById('login-error').classList.remove('show');
 }
 
+var _modo = 'leitor'; // 'tecnico' | 'leitor'
+
 function mostrarApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('sa').style.display = '';
+  document.getElementById('bnav').style.display = '';   // reseta inline style — deixa setNav() controlar
   document.getElementById('topbar-content').style.display = '';
   document.getElementById('logout-area').style.display = 'flex';
   var lbl = document.getElementById('user-label');
@@ -388,6 +391,11 @@ async function iniciarSessao() {
   }).then(function(r){ return r.json(); }).catch(function(){ return []; });
 
   if (!tecs || !tecs[0]) {
+    // Não é técnico — verifica se é domínio Kovi para acesso como leitor
+    if (email.endsWith('@kovi.com.br')) {
+      iniciarSessaoLeitor(user);
+      return;
+    }
     localStorage.removeItem('sb_session');
     _session = null;
     renderLogin();
@@ -397,6 +405,15 @@ async function iniciarSessao() {
 
   _tecnico = tecs[0];
   ST.td    = _tecnico.nome;
+  _modo    = 'tecnico';
+  mostrarApp();
+}
+
+async function iniciarSessaoLeitor(user) {
+  // Qualquer @kovi.com.br que não é técnico entra como leitor
+  var nome = (user.user_metadata && user.user_metadata.full_name) || user.email || 'Usuário';
+  _tecnico = { id: null, nome: nome, email: user.email };
+  _modo    = 'leitor';
   mostrarApp();
 }
 
@@ -541,10 +558,13 @@ function uiSync(){
 
 // ── HOME ─────────────────────────────────────────────────────────────────────
 function rHome(p){
+  var novoBtnHtml = _modo === 'tecnico'
+    ? '<button class="home-btn new" onclick="iniciarNovo()"><div class="home-btn-ico">&#x1F4CB;</div><div><div class="home-btn-title">Novo Checklist</div><div class="home-btn-sub">Iniciar vistoria de desmontagem</div></div></button>'
+    : '';
   p.innerHTML='<div class="home-wrap">'
     +'<div class="home-title">Checklist Funilaria</div>'
     +'<div class="home-sub">Selecione uma opcao para continuar</div>'
-    +'<button class="home-btn new" onclick="iniciarNovo()"><div class="home-btn-ico">&#x1F4CB;</div><div><div class="home-btn-title">Novo Checklist</div><div class="home-btn-sub">Iniciar vistoria de desmontagem</div></div></button>'
+    +novoBtnHtml
     +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico">&#x1F5C2;&#xFE0F;</div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
   +'</div>';
 }
