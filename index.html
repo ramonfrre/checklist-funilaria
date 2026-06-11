@@ -191,6 +191,20 @@ input[type=file]{display:none}
 .ss{font-size:15px;color:var(--ink3);max-width:300px;line-height:1.7}
 .sid{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink3);margin-top:20px;padding:10px 18px;background:var(--rule);border-radius:8px}
 .snw{margin-top:28px;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:16px 36px;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* REC OPTS */
+.rec-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-family:'DM Mono',monospace;margin-bottom:8px}
+.rec-opts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.rec-opt{flex:1;min-width:80px;padding:10px 6px;border-radius:10px;border:1.5px solid var(--rule);background:var(--wh);font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;font-family:'DM Sans',sans-serif;text-align:center;transition:all .15s;line-height:1.3}
+.rec-opt:active{opacity:.7}
+.rec-opt.troca.on{background:var(--rd-l);border-color:var(--rd);color:var(--rd)}
+.rec-opt.recuperacao.on{background:var(--pu-l);border-color:var(--pu);color:var(--pu)}
+.rec-opt.celula.on{background:var(--bl-l);border-color:var(--bl);color:var(--bl)}
+/* EDIT */
+.edit-btn{display:inline-flex;align-items:center;gap:6px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px}
+.edit-btn:active{opacity:.7}
+/* COMP FILTER */
+.comp-filter-btn{display:flex;align-items:center;gap:7px;background:var(--wh);border:1.5px solid var(--rule);border-radius:9px;padding:10px 14px;font-size:14px;font-weight:500;color:var(--ink3);cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;width:100%}
+.comp-filter-btn.on{background:var(--bl-l);border-color:var(--bl);color:var(--bl)}
 /* LOGIN */
 .login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:32px 24px;background:var(--bg)}
 .login-logo{width:80px;height:80px;border-radius:20px;background:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:24px;overflow:hidden}
@@ -203,6 +217,20 @@ input[type=file]{display:none}
 .login-error{font-size:13px;color:var(--rd);text-align:center;margin-top:16px;display:none}
 .login-error.show{display:block}
 .logout-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:8px;color:#fff;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;padding:6px 12px;cursor:pointer}
+/* FLAGS */
+.flag-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.flag-btn{flex:1;padding:10px 4px;border:1.5px solid var(--rule);border-radius:9px;background:var(--wh);font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink3);min-width:80px;text-align:center;transition:all .15s}
+.flag-btn:active{opacity:.7}
+.flag-btn.troca.on{background:var(--bl-l);color:var(--bl);border-color:var(--bl)}
+.flag-btn.recuperacao.on{background:var(--pu-l);color:var(--pu);border-color:var(--pu)}
+.flag-btn.celula.on{background:var(--gr-l);color:var(--gr);border-color:var(--gr)}
+/* FILTRO COMPLEMENTO */
+.comp-filter-btn{padding:8px 14px;border:1.5px solid var(--rule);border-radius:9px;background:var(--wh);font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink3);display:flex;align-items:center;gap:6px}
+.comp-filter-btn.on{background:var(--bl-l);color:var(--bl);border-color:var(--bl)}
+/* BOTÃO EDITAR HOME */
+.home-btn.edit .home-btn-ico{background:#FFF3EB}
+/* EDIT MODE BANNER */
+.edit-banner{background:var(--am-l);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;color:var(--am);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -290,11 +318,22 @@ function renderLogin() {
 }
 
 var _modo = 'leitor'; // 'tecnico' | 'leitor'
+var _ultimoChecklist = null; // último checklist editável do técnico
+var _filtroComplemento = false;
+
+async function verificarUltimoChecklist() {
+  if (_modo !== 'tecnico' || !_tecnico || !_tecnico.id) return;
+  var cls = await sbSelect('checklists',
+    'select=id,placa,created_at&tecnico_id=eq.' + _tecnico.id + '&editado=eq.false&order=created_at.desc&limit=1'
+  ).catch(function(){ return []; });
+  _ultimoChecklist = (cls && cls[0]) ? cls[0] : null;
+  if (ST.mode === 'home') render();
+}
 
 function mostrarApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('sa').style.display = '';
-  document.getElementById('bnav').style.display = '';   // reseta inline style — deixa setNav() controlar
+  document.getElementById('bnav').style.display = '';
   document.getElementById('topbar-content').style.display = '';
   document.getElementById('logout-area').style.display = 'flex';
   var lbl = document.getElementById('user-label');
@@ -304,6 +343,7 @@ function mostrarApp() {
     var ultimo   = partes.length > 1 ? partes[partes.length-1].charAt(0).toUpperCase() + partes[partes.length-1].slice(1).toLowerCase() : '';
     lbl.textContent = primeiro + (ultimo ? ' ' + ultimo : '');
   }
+  verificarUltimoChecklist();
   render();
 }
 
@@ -417,6 +457,15 @@ async function iniciarSessaoLeitor(user) {
   mostrarApp();
 }
 
+async function sbUpdate(table, id, body) {
+  var h = Object.assign({}, getAuthHeaders(), { 'Prefer': 'return=representation' });
+  var res = await fetch(API + '/' + table + '?id=eq.' + id, {
+    method: 'PATCH', headers: h, body: JSON.stringify(body)
+  });
+  if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
+  return res.json();
+}
+
 async function sbSelect(table, params) {
   var url = API + '/' + table + (params ? '?' + params : '');
   var res = await fetch(url, { headers: getAuthHeaders() });
@@ -490,8 +539,11 @@ var CAT = [
 var SECS  = ['Frente','Lateral','Traseira','Interna'];
 var STEPS = ['hdr','Frente','Lateral','Traseira','Interna','pecas','resumo'];
 var ST    = {step:0,placa:'',data:'',td:'',chk:{},pecas:[{o:'',fotos:[]},{o:'',fotos:[]}],complemento:false,mode:'home'};
-CAT.forEach(function(i){ ST.chk[i.s+'_'+i.r]={st:null,rec:false,o:'',fotos:[]}; });
-var _allChecklists = [];
+CAT.forEach(function(i){ ST.chk[i.s+'_'+i.r]={st:null,tipo_rec:null,o:'',fotos:[]}; });
+var _allChecklists   = [];
+var _filtroComplemento = false;
+var _editMode        = false;
+var _editChecklistId = null;
 
 function ky(i){ return i.s+'_'+i.r; }
 function ndone(){ return CAT.filter(function(i){ return ST.chk[ky(i)].st; }).length; }
@@ -561,16 +613,20 @@ function rHome(p){
   var novoBtnHtml = _modo === 'tecnico'
     ? '<button class="home-btn new" onclick="iniciarNovo()"><div class="home-btn-ico">&#x1F4CB;</div><div><div class="home-btn-title">Novo Checklist</div><div class="home-btn-sub">Iniciar vistoria de desmontagem</div></div></button>'
     : '';
+  var editBtnHtml = (_modo === 'tecnico' && _ultimoChecklist)
+    ? '<button class="home-btn edit" onclick="iniciarEdicao()"><div class="home-btn-ico" style="background:var(--am-l)">&#x270F;&#xFE0F;</div><div><div class="home-btn-title">Editar ultimo checklist</div><div class="home-btn-sub">Placa '+(_ultimoChecklist.placa||'')+' &middot; Apenas uma vez</div></div></button>'
+    : '';
   p.innerHTML='<div class="home-wrap">'
     +'<div class="home-title">Checklist Funilaria</div>'
     +'<div class="home-sub">Selecione uma opcao para continuar</div>'
     +novoBtnHtml
+    +editBtnHtml
     +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico">&#x1F5C2;&#xFE0F;</div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
   +'</div>';
 }
 function iniciarNovo(){
-  ST.mode='checklist'; ST.step=0;
-  CAT.forEach(function(i){ ST.chk[ky(i)]={st:null,rec:false,o:'',fotos:[]}; });
+  ST.mode='checklist'; ST.step=0; ST._editId=null;
+  CAT.forEach(function(i){ ST.chk[ky(i)]={st:null,flag:null,o:'',fotos:[],dbId:null}; });
   ST.placa=''; ST.data=''; ST.complemento=false;
   ST.pecas=[{o:'',fotos:[]},{o:'',fotos:[]}];
   render();
@@ -633,6 +689,7 @@ function rHistData(p, checklists){
   p.innerHTML='<button class="back-link" onclick="voltarHome()">&#x2190; Voltar</button>'
     +'<div class="hist-filters">'
       +'<div class="hist-search-wrap"><span class="hist-search-icon">&#x1F50D;</span><input class="hist-search-input" type="text" id="hist-search" placeholder="Buscar por placa ou tecnico..."></div>'
+      +'<button class="comp-filter-btn'+((_filtroComplemento)?' on':'')+'" id="btn-comp" onclick="toggleFiltroComplemento()">&#x1F527; Apenas com complemento</button>'
       +'<div class="hist-date-row"><div class="hist-date-group"><label>De</label><input class="hist-date-input" type="date" id="hist-de"></div><div class="hist-date-group"><label>Ate</label><input class="hist-date-input" type="date" id="hist-ate"></div><button class="hist-clear-btn" onclick="limparFiltros()">&#x2715;</button></div>'
     +'</div>'
     +'<div id="hist-list"></div>';
@@ -641,11 +698,18 @@ function rHistData(p, checklists){
   document.getElementById('hist-ate').addEventListener('change',filtrarHist);
   renderHistList(_allChecklists);
 }
+function toggleFiltroComplemento(){
+  _filtroComplemento = !_filtroComplemento;
+  var btn = document.getElementById('btn-comp');
+  if(btn) btn.className = 'comp-filter-btn' + (_filtroComplemento ? ' on' : '');
+  filtrarHist();
+}
 function filtrarHist(){
   var s=document.getElementById('hist-search'),de=document.getElementById('hist-de'),ate=document.getElementById('hist-ate');
   if(!s) return;
   var q=s.value.toUpperCase().trim(),dv=de?de.value:'',av=ate?ate.value:'';
   var filtered=_allChecklists.filter(function(c){
+    if(_filtroComplemento && !c._complemento) return false;
     var texto=((c.Placa||'')+' '+(c.Tecnico_Desmontagem||'')).toUpperCase();
     if(q&&texto.indexOf(q)<0) return false;
     if(dv||av){ var parts=(c.Data||'').split('/'); if(parts.length===3){ var iso=parts[2]+'-'+parts[1]+'-'+parts[0]; if(dv&&iso<dv) return false; if(av&&iso>av) return false; } }
@@ -831,9 +895,10 @@ function rSec(p,sec){
         +'<button class="sb '+(cc.st==='desmontado'?'desm':'')+'" data-k="'+kk+'" data-v="desmontado" onclick="setSt(this)"><span class="ic">&#x1F527;</span>Desmontado</button>'
       +'</div>'
       +'<div class="xtr '+(cc.st==='desmontado'?'open':'')+'" id="ex-'+kk+'">'
-        +'<div class="rec-toggle '+(cc.rec?'on':'')+'" id="rt-'+kk+'" onclick="toggleRec(\''+kk+'\')">'
-          +'<span class="rec-icon">&#x1F504;</span><div class="rec-text"><div class="rec-title">Peca vai para recuperacao</div><div class="rec-sub">Toque para marcar/desmarcar</div></div>'
-          +'<div class="rec-check" id="rc-'+kk+'">'+(cc.rec?'&#x2713;':'')+'</div>'
+        +'<div class="flag-row" id="fr-'+kk+'">'
+          +'<button class="flag-btn troca'+(cc.flag==='troca'?' on':'')+'" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')">&#x1F504; Troca</button>'
+          +'<button class="flag-btn recuperacao'+(cc.flag==='recuperacao'?' on':'')+'" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')">&#x1F9F0; Recuperacao</button>'
+          +'<button class="flag-btn celula'+(cc.flag==='celula'?' on':'')+'" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')">&#x1F3ED; Celula</button>'
         +'</div>'
         +'<textarea rows="2" placeholder="Observacao..." oninput="ST.chk[\''+kk+'\'].o=this.value">'+(cc.o||'')+'</textarea>'
         +'<div class="fotos-wrap" id="fw-'+kk+'"></div>'
@@ -845,7 +910,7 @@ function rSec(p,sec){
 }
 function setSt(btn){
   var kk=btn.dataset.k,v=btn.dataset.v,cc=ST.chk[kk];
-  cc.st=cc.st===v?null:v; if(cc.st!=='desmontado') cc.rec=false;
+  cc.st=cc.st===v?null:v; if(cc.st!=='desmontado') cc.flag=null;
   btn.closest('.sbr').querySelectorAll('.sb').forEach(function(b){ b.className='sb'; if(b.dataset.v==='montado'&&cc.st==='montado') b.className='sb mont'; if(b.dataset.v==='desmontado'&&cc.st==='desmontado') b.className='sb desm'; });
   document.getElementById('cd-'+kk).className='itm '+(cc.st||'');
   document.getElementById('dt-'+kk).className='idot '+(cc.st||'');
@@ -854,7 +919,11 @@ function setSt(btn){
   var sp=document.getElementById('sp'); if(sp) sp.textContent=dn+'/'+its.length;
   uiSync();
 }
-function toggleRec(kk){ var cc=ST.chk[kk]; cc.rec=!cc.rec; var rt=document.getElementById('rt-'+kk),rc=document.getElementById('rc-'+kk); if(cc.rec){ rt.classList.add('on'); rc.innerHTML='&#x2713;'; }else{ rt.classList.remove('on'); rc.innerHTML=''; } }
+function setFlag(kk, tipo){
+  var cc=ST.chk[kk]; cc.flag = cc.flag===tipo ? null : tipo;
+  var fr=document.getElementById('fr-'+kk); if(!fr) return;
+  fr.querySelectorAll('.flag-btn').forEach(function(b){ b.className='flag-btn '+b.dataset.tipo+(cc.flag===b.dataset.tipo?' on':''); });
+}
 function compress(file,cb){ var r=new FileReader(); r.onload=function(e){ var img=new Image(); img.onload=function(){ var M=900,w=img.width,h=img.height; if(w>M){h=h*M/w;w=M;} if(h>M){w=w*M/h;h=M;} var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',.75)); }; img.src=e.target.result; }; r.readAsDataURL(file); }
 function addFotoItem(kk,inp){ if(!inp.files||!inp.files[0]) return; var cc=ST.chk[kk]; if(cc.fotos.length>=MAX_FOTOS) return; compress(inp.files[0],function(b64){ cc.fotos.push(b64); renderFotos(kk); }); }
 function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); }
@@ -896,13 +965,14 @@ function toggleComplemento(){
   if(c) c.innerHTML=ST.complemento?'&#x2713;':'';
 }
 function rResumo(p){
-  var mo=[],de=[],re=[],pend=[];
-  CAT.forEach(function(i){ var cc=ST.chk[ky(i)]; if(cc.st==='montado') mo.push(i); else if(cc.st==='desmontado'){ de.push(i); if(cc.rec) re.push(i); }else pend.push(i); });
+  var mo=[],de=[],troca=[],rec=[],celula=[],pend=[];
+  CAT.forEach(function(i){ var cc=ST.chk[ky(i)]; if(cc.st==='montado') mo.push(i); else if(cc.st==='desmontado'){ de.push(i); if(cc.flag==='troca') troca.push(i); else if(cc.flag==='recuperacao') rec.push(i); else if(cc.flag==='celula') celula.push(i); }else pend.push(i); });
+  var flagCount = troca.length + rec.length + celula.length;
   var h='<div class="s4">'
     +'<div class="sbox"><div class="snum t">'+CAT.length+'</div><div class="slbl">Total</div></div>'
     +'<div class="sbox"><div class="snum mo">'+mo.length+'</div><div class="slbl">Nao desm.</div></div>'
     +'<div class="sbox"><div class="snum de">'+de.length+'</div><div class="slbl">Desmontado</div></div>'
-    +'<div class="sbox"><div class="snum re">'+re.length+'</div><div class="slbl">Recuperacao</div></div>'
+    +'<div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div>'
   +'</div>';
   if(pend.length>0) h+='<div class="wn">'+pend.length+' item(ns) sem avaliacao.</div>';
   h+='<div class="comp-toggle'+(ST.complemento?' on':'')+'" id="comp-toggle" onclick="toggleComplemento()">'
@@ -911,9 +981,15 @@ function rResumo(p){
     +'<div class="comp-check" id="comp-check">'+(ST.complemento?'&#x2713;':'')+'</div>'
   +'</div>';
   h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(ST.placa||'-').toUpperCase()+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(ST.data?ST.data.split('-').reverse().join('/'):'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(ST.td||'-')+'</span></div></div>';
-  if(re.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Recuperacao <span class="res-badge re">'+re.length+'</span></div>'; re.forEach(function(it){ h+='<div class="res-item"><div class="res-dot re"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div></div></div>'; }); h+='</div>'; }
+  var flagLabels = {troca:'&#x1F504; Troca',recuperacao:'&#x1F9F0; Recuperacao',celula:'&#x1F3ED; Celula'};
+  [['troca',troca],['recuperacao',rec],['celula',celula]].forEach(function(pair){
+    var tipo=pair[0], lista=pair[1];
+    if(!lista.length) return;
+    h+='<div class="res-sec"><div class="res-sec-title">'+flagLabels[tipo]+' <span class="res-badge re">'+lista.length+'</span></div>';
+    lista.forEach(function(it){ h+='<div class="res-item"><div class="res-dot re"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div></div></div>'; });
+    h+='</div>';
+  });
   if(de.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Desmontadas <span class="res-badge de">'+de.length+'</span></div>'; de.forEach(function(it){ var cc=ST.chk[ky(it)]; h+='<div class="res-item"><div class="res-dot de"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div>'+(cc.o?'<div style="font-size:12px;color:#888;font-style:italic;margin-top:2px">'+cc.o+'</div>':'')+'<div style="font-size:11px;color:#888;margin-top:2px">'+cc.fotos.length+' foto(s)</div></div></div>'; }); h+='</div>'; }
-  if(mo.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Nao desmontadas <span class="res-badge mo">'+mo.length+'</span></div>'; mo.forEach(function(it){ h+='<div class="res-item"><div class="res-dot mo"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div></div></div>'; }); h+='</div>'; }
   p.innerHTML=h;
 }
 
@@ -951,7 +1027,7 @@ function goNext(){
     prosseguirSecao();
     return;
   }
-  if(s==='resumo'){ enviar(); return; }
+  if(s==='resumo'){ if(ST._editId) salvarEdicao(); else enviar(); return; }
   ST.step++; render();
 }
 function goBack(){ if(ST.step===0){ ST.mode='home'; render(); return; } ST.step--; render(); }
@@ -994,7 +1070,8 @@ function enviar(){
           item: it.d,
           situacao: cc.st==='montado' ? 'ok' : cc.st==='desmontado' ? 'nao_ok' : null,
           desmontado: cc.st==='desmontado',
-          recuperacao: cc.rec || false,
+          recuperacao: cc.flag === 'recuperacao',
+          tipo_flag: cc.flag || null,
           observacao: cc.o || null
         });
 
@@ -1037,8 +1114,100 @@ function enviar(){
 
 function sucesso(id){
   setNav(false);
+  _ultimoChecklist = null; // reset — o próximo login verifica de novo
   document.getElementById('pg').innerHTML='<div class="sw"><div class="si">&#x2705;</div><div class="st">Checklist enviado!</div><div class="ss">Dados salvos no banco e fotos no Supabase Storage.</div><div class="sid">ID: '+id+'</div><button class="snw" onclick="voltarHome()">Voltar ao inicio</button></div>';
   uiTop('CONCLUIDO','','');
+  verificarUltimoChecklist();
+}
+
+// ── EDITAR ULTIMO CHECKLIST ──────────────────────────────────────────────────
+function iniciarEdicao(){
+  if(!_ultimoChecklist) return;
+  carregarParaEditar(_ultimoChecklist.id);
+}
+
+async function carregarParaEditar(clId){
+  loading('Carregando checklist...');
+  try {
+    var cls = await sbSelect('checklists', 'select=*&id=eq.'+clId);
+    var cl  = cls && cls[0];
+    if(!cl){ loadingOff(); mostrarModal('Checklist nao encontrado.','&#x274C;'); return; }
+
+    var itens = await sbSelect('checklist_itens',
+      'select=id,zona,item,situacao,desmontado,recuperacao,tipo_flag,observacao&checklist_id=eq.'+clId+'&zona=neq.Pecas');
+
+    loadingOff();
+
+    ST._editId    = clId;
+    ST.mode       = 'checklist';
+    ST.step       = 0;
+    ST.placa      = cl.placa;
+    ST.data       = cl.data;
+    ST.td         = _tecnico ? _tecnico.nome : cl.tecnico_id;
+    ST.complemento= cl.tem_complemento || false;
+    ST.pecas      = [{o:'',fotos:[]},{o:'',fotos:[]}];
+
+    CAT.forEach(function(i){ ST.chk[ky(i)]={st:null,flag:null,o:'',fotos:[],dbId:null}; });
+
+    (itens||[]).forEach(function(it){
+      var cat = CAT.find(function(c){ return c.s===it.zona && c.d===it.item; });
+      if(!cat) return;
+      var kk = ky(cat);
+      ST.chk[kk].st    = it.desmontado ? 'desmontado' : 'montado';
+      ST.chk[kk].flag  = it.tipo_flag || (it.recuperacao ? 'recuperacao' : null);
+      ST.chk[kk].o     = it.observacao || '';
+      ST.chk[kk].dbId  = it.id;
+    });
+
+    render();
+  } catch(e) {
+    loadingOff();
+    mostrarModal('Erro ao carregar: '+e.message,'&#x274C;');
+  }
+}
+
+async function salvarEdicao(){
+  loading('Atualizando checklist...');
+  try {
+    // Atualiza o header do checklist
+    await sbUpdate('checklists', ST._editId, {
+      placa: ST.placa,
+      data: ST.data,
+      tem_complemento: ST.complemento || false,
+      editado: true
+    });
+
+    // Atualiza cada item
+    for(var idx=0; idx<CAT.length; idx++){
+      var it = CAT[idx];
+      var cc = ST.chk[ky(it)];
+      if(!cc.dbId) continue;
+      loading('Atualizando itens... ('+(idx+1)+'/'+CAT.length+')');
+      await sbUpdate('checklist_itens', cc.dbId, {
+        situacao: cc.st==='montado' ? 'ok' : cc.st==='desmontado' ? 'nao_ok' : null,
+        desmontado: cc.st==='desmontado',
+        recuperacao: cc.flag === 'recuperacao',
+        tipo_flag: cc.flag || null,
+        observacao: cc.o || null
+      });
+      // Upload de novas fotos (se houver)
+      for(var fi=0; fi<(cc.fotos||[]).length; fi++){
+        loading('Enviando foto adicional...');
+        var path = ST._editId+'/'+cc.dbId+'/edit_'+Date.now()+'_'+fi+'.jpg';
+        var fResult = await uploadFoto(cc.fotos[fi], path);
+        await sbInsert('checklist_fotos', { item_id: cc.dbId, storage_path: fResult.storagePath, url: fResult.url });
+      }
+    }
+
+    _ultimoChecklist = null;
+    loadingOff();
+    var savedId = ST._editId;
+    ST._editId = null;
+    sucesso(savedId);
+  } catch(e) {
+    loadingOff();
+    mostrarModal('Erro ao atualizar: '+e.message,'&#x274C;');
+  }
 }
 
 // Oculta app até autenticar
