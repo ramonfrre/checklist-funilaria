@@ -1001,12 +1001,15 @@ function goNext(){
     var its=CAT.filter(function(i){ return i.s===s; });
     var pending=its.filter(function(i){ return !ST.chk[ky(i)].st; });
     function prosseguirSecao(){
-      var semFoto=its.filter(function(i){ var cc=ST.chk[ky(i)]; return cc.st==='desmontado'&&cc.fotos.length===0; });
-      if(semFoto.length>0){
-        semFoto.forEach(function(it){ var fo=document.getElementById('fo-'+ky(it)); if(fo) fo.classList.add('show'); });
-        var first=document.getElementById('cd-'+ky(semFoto[0])); if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
-        mostrarModal('Registre pelo menos 1 foto para cada item desmontado. ('+semFoto.length+' pendente(s))','&#x1F4F7;');
-        return;
+      // Em modo de edição as fotos já estão no banco — não valida
+      if(!ST._editId){
+        var semFoto=its.filter(function(i){ var cc=ST.chk[ky(i)]; return cc.st==='desmontado'&&cc.fotos.length===0; });
+        if(semFoto.length>0){
+          semFoto.forEach(function(it){ var fo=document.getElementById('fo-'+ky(it)); if(fo) fo.classList.add('show'); });
+          var first=document.getElementById('cd-'+ky(semFoto[0])); if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
+          mostrarModal('Registre pelo menos 1 foto para cada item desmontado. ('+semFoto.length+' pendente(s))','&#x1F4F7;');
+          return;
+        }
       }
       ST.step++; render();
     }
