@@ -613,14 +613,10 @@ function rHome(p){
   var novoBtnHtml = _modo === 'tecnico'
     ? '<button class="home-btn new" onclick="iniciarNovo()"><div class="home-btn-ico">&#x1F4CB;</div><div><div class="home-btn-title">Novo Checklist</div><div class="home-btn-sub">Iniciar vistoria de desmontagem</div></div></button>'
     : '';
-  var editBtnHtml = (_modo === 'tecnico' && _ultimoChecklist)
-    ? '<button class="home-btn edit" onclick="iniciarEdicao()"><div class="home-btn-ico" style="background:var(--am-l)">&#x270F;&#xFE0F;</div><div><div class="home-btn-title">Editar ultimo checklist</div><div class="home-btn-sub">Placa '+(_ultimoChecklist.placa||'')+' &middot; Apenas uma vez</div></div></button>'
-    : '';
   p.innerHTML='<div class="home-wrap">'
     +'<div class="home-title">Checklist Funilaria</div>'
     +'<div class="home-sub">Selecione uma opcao para continuar</div>'
     +novoBtnHtml
-    +editBtnHtml
     +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico">&#x1F5C2;&#xFE0F;</div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
   +'</div>';
 }
@@ -755,7 +751,6 @@ function rDetLoading(p){
       var cl = await sbSelect('checklists',
         'select=*,tecnicos(nome)&id=eq.'+ST.detId+'&limit=1');
       cl = cl && cl[0];
-
       if(!cl){
         document.getElementById('ls').classList.remove('on');
         p.innerHTML='<div style="text-align:center;padding:40px 20px">'
@@ -794,6 +789,9 @@ function rDetLoading(p){
       });
 
       var mappedCl = {
+        _rawId: cl.id,
+        _tecnicoId: cl.tecnico_id,
+        _editado: cl.editado,
         Placa: cl.placa,
         Data: cl.data ? cl.data.split('-').reverse().join('/') : '',
         Tecnico_Desmontagem: cl.tecnicos ? cl.tecnicos.nome : '',
@@ -814,7 +812,13 @@ function rDetData(p, res){
   var mo=0,de=0,re=0;
   itens.forEach(function(it){ if(it.Status==='montado') mo++; else if(it.Status==='desmontado'){ de++; if(isRec(it.Recuperacao)) re++; } });
   var temComplemento=isRec(c.Complemento);
+  // Mostra botão de editar se: técnico logado, autor do checklist, não editado, é o último
+  var podeEditar = _modo === 'tecnico'
+    && _tecnico && c._tecnicoId === _tecnico.id
+    && c._editado === false
+    && _ultimoChecklist && _ultimoChecklist.id === c._rawId;
   var h='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>';
+  if(podeEditar) h+='<button style="display:flex;align-items:center;gap:8px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;width:100%;margin-bottom:14px" onclick="carregarParaEditar(\''+c._rawId+'\')">&#x270F;&#xFE0F; Editar este checklist (apenas uma vez)</button>';
   if(temComplemento) h+='<div class="comp-badge-det">&#x1F527; Este carro teve complemento</div>';
   h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Nao desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+re+'</div><div class="slbl">Recuperacao</div></div></div>';
   h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(c.Placa||'-')+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(c.Data||'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(c.Tecnico_Desmontagem||'-')+'</span></div><div class="ir"><span class="ik">Complemento</span><span class="iv" style="color:'+(temComplemento?'var(--bl)':'var(--ink3)')+'">'+(temComplemento?'Sim':'Nao')+'</span></div></div>';
