@@ -780,6 +780,7 @@ function rDetLoading(p){
           Secao: it.zona,
           Status: it.desmontado ? 'desmontado' : 'montado',
           Recuperacao: it.recuperacao,
+          TipoFlag: it.tipo_flag || null,
           Observacao: it.observacao || '',
           Foto: (it.checklist_fotos||[]).map(function(f){ return f.url; }).join('|')
         };
@@ -814,10 +815,11 @@ function rDetLoading(p){
 
 function rDetData(p, res){
   var c=res.checklist, itens=res.itens, pecas=res.pecas;
-  var mo=0,de=0,re=0;
-  itens.forEach(function(it){ if(it.Status==='montado') mo++; else if(it.Status==='desmontado'){ de++; if(isRec(it.Recuperacao)) re++; } });
+  var mo=0,de=0,flagCount=0;
+  var flagLabels={'troca':'&#x1F504; Troca','recuperacao':'&#x1F9F0; Recuperacao','celula':'&#x1F3ED; Celula'};
+  var flagColors={'troca':'var(--bl)','recuperacao':'var(--pu)','celula':'var(--gr)'};
+  itens.forEach(function(it){ if(it.Status==='montado') mo++; else if(it.Status==='desmontado'){ de++; if(it.TipoFlag) flagCount++; } });
   var temComplemento=isRec(c.Complemento);
-  // Mostra botão de editar se: técnico logado, autor do checklist, não editado, é o último
   var podeEditar = _modo === 'tecnico'
     && _tecnico && c._tecnicoId === _tecnico.id
     && c._editado === false
@@ -825,13 +827,8 @@ function rDetData(p, res){
   var h='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>';
   if(podeEditar) h+='<button style="display:flex;align-items:center;gap:8px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;width:100%;margin-bottom:14px" onclick="carregarParaEditar(\''+c._rawId+'\')">&#x270F;&#xFE0F; Editar este checklist (apenas uma vez)</button>';
   if(temComplemento) h+='<div class="comp-badge-det">&#x1F527; Este carro teve complemento</div>';
-  h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Nao desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+re+'</div><div class="slbl">Recuperacao</div></div></div>';
+  h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Nao desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div></div>';
   h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(c.Placa||'-')+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(c.Data||'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(c.Tecnico_Desmontagem||'-')+'</span></div><div class="ir"><span class="ik">Complemento</span><span class="iv" style="color:'+(temComplemento?'var(--bl)':'var(--ink3)')+'">'+(temComplemento?'Sim':'Nao')+'</span></div></div>';
-  var recItens=itens.filter(function(it){ return isRec(it.Recuperacao); });
-  h+='<div class="res-sec"><div class="res-sec-title">Recuperacao';
-  if(recItens.length>0){ h+=' <span class="res-badge re">'+recItens.length+'</span></div>'; recItens.forEach(function(it){ h+='<div class="res-item"><div class="res-dot re"></div><div><div class="res-sec2">'+it.Secao+' &middot; '+it.Ref+'</div><div class="res-desc">'+it.Descricao+'</div></div></div>'; }); }
-  else{ h+='</div><div style="background:#fff;border-radius:10px;padding:12px 14px;font-size:14px;color:#888;box-shadow:var(--sh)">Nenhuma peca para recuperacao.</div>'; }
-  h+='</div>';
   ['Frente','Lateral','Traseira','Interna'].forEach(function(sec){
     var si=itens.filter(function(it){ return it.Secao===sec; }); if(!si.length) return;
     var ms=si.filter(function(i){ return i.Status==='montado'; }).length;
@@ -841,11 +838,15 @@ function rDetData(p, res){
       var st=it.Status||'', stCls=st==='montado'?'montado':st==='desmontado'?'desmontado':'empty';
       var stLbl=st==='montado'?'Nao desmontado':st==='desmontado'?'Desmontado':'-';
       var fotos=(it.Foto||'').split('|').filter(function(u){ return u.trim(); });
-      h+='<div class="det-item"><span class="det-ref">'+it.Ref+'</span><div style="flex:1"><div class="det-desc">'+it.Descricao+'</div>'+(isRec(it.Recuperacao)?'<div class="det-rec">Recuperacao</div>':'')+(it.Observacao?'<div class="det-obs">'+it.Observacao+'</div>':'');
+      var flagHtml = it.TipoFlag
+        ? '<div style="font-size:11px;font-weight:600;color:'+flagColors[it.TipoFlag]+';margin-top:3px">'+flagLabels[it.TipoFlag]+'</div>'
+        : '';
+      h+='<div class="det-item"><span class="det-ref">'+it.Ref+'</span><div style="flex:1"><div class="det-desc">'+it.Descricao+'</div>'+flagHtml+(it.Observacao?'<div class="det-obs">'+it.Observacao+'</div>':'');
       fotos.forEach(function(u,fi){ h+='<a class="det-foto-link" href="'+u.trim()+'" target="_blank">Foto '+(fi+1)+'</a>'; });
       h+='</div><span class="det-status '+stCls+'">'+stLbl+'</span></div>';
     });
     h+='</div>';
+  });
   });
   if(pecas&&pecas.length){
     h+='<div class="det-section"><div class="det-sec-hdr">PECAS REMOVIDAS</div>';
