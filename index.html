@@ -349,7 +349,7 @@ function mostrarApp() {
     if (avt) avt.textContent = primeiro.charAt(0) + (ultimo ? ultimo.charAt(0) : '');
   }
   verificarUltimoChecklist();
-  render();
+  restaurarEstado();
 }
 
 async function loginGoogle() {
@@ -361,6 +361,7 @@ async function loginGoogle() {
 }
 
 async function fazerLogout() {
+  limparRascunho();
   await fetch(SUPABASE_URL + '/auth/v1/signout', {
     method: 'POST',
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (_session ? _session.access_token : SUPABASE_KEY) }
@@ -500,6 +501,82 @@ async function uploadFoto(b64, path) {
   return { storagePath: path, url: SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + path };
 }
 
+// ── RASCUNHO + ESTADO DE NAVEGAÇÃO ──────────────────────────
+function salvarRascunho() {
+  if (ST.mode !== 'checklist') return;
+  try {
+    var snap = {
+      step: ST.step, placa: ST.placa, data: ST.data,
+      td: ST.td, complemento: ST.complemento, _editId: ST._editId || null,
+      pecas: (ST.pecas||[]).map(function(p){ return {o:p.o||''}; }),
+      chk: {}
+    };
+    CAT.forEach(function(it){
+      var kk=ky(it), cc=ST.chk[kk];
+      snap.chk[kk] = {st:cc.st, flag:cc.flag, o:cc.o||'', dbId:cc.dbId||null};
+    });
+    sessionStorage.setItem('cl_rascunho', JSON.stringify(snap));
+  } catch(e){}
+}
+
+function limparRascunho() {
+  try { sessionStorage.removeItem('cl_rascunho'); } catch(e){}
+  try { sessionStorage.removeItem('cl_nav'); } catch(e){}
+}
+
+function restaurarRascunho() {
+  try {
+    var raw = sessionStorage.getItem('cl_rascunho');
+    if (!raw) return false;
+    var snap = JSON.parse(raw);
+    ST.mode='checklist'; ST.step=snap.step||0;
+    ST.placa=snap.placa||''; ST.data=snap.data||'';
+    ST.td=snap.td||(_tecnico?_tecnico.nome:'');
+    ST.complemento=snap.complemento||false;
+    ST._editId=snap._editId||null;
+    var temDesmontado=false;
+    CAT.forEach(function(it){
+      var kk=ky(it), s=snap.chk&&snap.chk[kk];
+      if(s){ ST.chk[kk]={st:s.st,flag:s.flag,o:s.o||'',fotos:[],dbId:s.dbId||null}; if(s.st==='desmontado') temDesmontado=true; }
+    });
+    if(snap.pecas) snap.pecas.forEach(function(p,i){ if(ST.pecas[i]){ST.pecas[i].o=p.o||'';ST.pecas[i].fotos=[];} });
+    return temDesmontado;
+  } catch(e){ limparRascunho(); return false; }
+}
+
+function salvarNavState() {
+  if (ST.mode==='checklist') return;
+  try { sessionStorage.setItem('cl_nav', JSON.stringify({mode:ST.mode, detId:ST.detId||null, detPlaca:ST.detPlaca||null})); } catch(e){}
+}
+
+function restaurarEstado() {
+  // 1. Rascunho de checklist em andamento
+  try {
+    var raw = sessionStorage.getItem('cl_rascunho');
+    if (raw) {
+      var snap = JSON.parse(raw);
+      if (snap && snap.placa) {
+        var temFoto = restaurarRascunho();
+        render();
+        if (temFoto) mostrarModal('Checklist restaurado!\nItens desmontados precisam de novas fotos.','&#x1F4F7;');
+        return;
+      }
+    }
+  } catch(e){}
+
+  // 2. Estado de navegação (histórico / detalhe)
+  try {
+    var navRaw = sessionStorage.getItem('cl_nav');
+    if (navRaw) {
+      var nav = JSON.parse(navRaw);
+      if (nav.mode==='hist') { ST.mode='hist'; }
+      else if (nav.mode==='det' && nav.detId) { ST.mode='det'; ST.detId=nav.detId; ST.detPlaca=nav.detPlaca||'-'; }
+    }
+  } catch(e){}
+
+  render();
+}
+
 // ── APP STATE ────────────────────────────────────────────────────────────────
 var TECNICOS = [
   'RODOLFO OLIVEIRA DARIO','MOABE SILVA SANTOS','CLAUDIO BELO DOS SANTOS',
@@ -578,6 +655,8 @@ function modalSim(){ var fn = _modalSimFn; fecharModal(); if(fn) fn(); }
 
 // ── RENDER ───────────────────────────────────────────────────────────────────
 function render(){
+  salvarRascunho();
+  salvarNavState();
   var p = document.getElementById('pg'); p.innerHTML = '';
   document.getElementById('sa').scrollTop = 0;
   if(ST.mode==='home'){ rHome(p); setNav(false); uiTop('INICIO','','-'); return; }
@@ -626,6 +705,7 @@ function rHome(p){
   +'</div>';
 }
 function iniciarNovo(){
+  limparRascunho();
   ST.mode='checklist'; ST.step=0; ST._editId=null;
   CAT.forEach(function(i){ ST.chk[ky(i)]={st:null,flag:null,o:'',fotos:[],dbId:null}; });
   ST.placa=''; ST.data=''; ST.complemento=false;
@@ -941,11 +1021,13 @@ function setSt(btn){
   var sec=kk.split('_')[0],its=CAT.filter(function(i){ return i.s===sec; }),dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
   var sp=document.getElementById('sp'); if(sp) sp.textContent=dn+'/'+its.length;
   uiSync();
+  salvarRascunho();
 }
 function setFlag(kk, tipo){
   var cc=ST.chk[kk]; cc.flag = cc.flag===tipo ? null : tipo;
   var fr=document.getElementById('fr-'+kk); if(!fr) return;
   fr.querySelectorAll('.flag-btn').forEach(function(b){ b.className='flag-btn '+b.dataset.tipo+(cc.flag===b.dataset.tipo?' on':''); });
+  salvarRascunho();
 }
 function compress(file,cb){ var r=new FileReader(); r.onload=function(e){ var img=new Image(); img.onload=function(){ var M=900,w=img.width,h=img.height; if(w>M){h=h*M/w;w=M;} if(h>M){w=w*M/h;h=M;} var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',.75)); }; img.src=e.target.result; }; r.readAsDataURL(file); }
 function addFotoItem(kk,inp){ if(!inp.files||!inp.files[0]) return; var cc=ST.chk[kk]; if(cc.fotos.length>=MAX_FOTOS) return; compress(inp.files[0],function(b64){ cc.fotos.push(b64); renderFotos(kk); }); }
@@ -1141,6 +1223,7 @@ function enviar(){
 
 function sucesso(id){
   setNav(false);
+  limparRascunho();
   _ultimoChecklist = null; // reset — o próximo login verifica de novo
   document.getElementById('pg').innerHTML='<div class="sw"><div class="si">&#x2705;</div><div class="st">Checklist enviado!</div><div class="ss">Dados salvos no banco e fotos no Supabase Storage.</div><div class="sid">ID: '+id+'</div><button class="snw" onclick="voltarHome()">Voltar ao inicio</button></div>';
   uiTop('CONCLUIDO','','');
