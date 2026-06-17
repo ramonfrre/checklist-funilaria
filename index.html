@@ -651,16 +651,21 @@ function rHistLoading(p){
 
       if(!cls || cls.length===0){ rHistData(p,[]); return; }
 
-      var ids = cls.map(function(c){ return c.id; }).join(',');
-      var itens = await sbSelect('checklist_itens',
-        'select=checklist_id,desmontado,recuperacao,zona&checklist_id=in.('+ids+')&zona=neq.Pecas');
+      // Usa RPC para agregar stats sem limite de linhas
+      var statsRes = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_checklist_stats', {
+        method: 'POST',
+        headers: Object.assign({}, getAuthHeaders(), {'Content-Type':'application/json'}),
+        body: JSON.stringify({ ids: cls.map(function(c){ return c.id; }) })
+      });
+      var statsData = statsRes.ok ? await statsRes.json() : [];
 
       var stats = {};
-      (itens||[]).forEach(function(it){
-        if(!stats[it.checklist_id]) stats[it.checklist_id]={desm:0,rec:0,total:0};
-        stats[it.checklist_id].total++;
-        if(it.desmontado)   stats[it.checklist_id].desm++;
-        if(it.recuperacao)  stats[it.checklist_id].rec++;
+      (statsData || []).forEach(function(s){
+        stats[s.checklist_id] = {
+          desm:  parseInt(s.desm)  || 0,
+          rec:   parseInt(s.rec)   || 0,
+          total: parseInt(s.total) || 0
+        };
       });
 
       var checklists = cls.map(function(c){
