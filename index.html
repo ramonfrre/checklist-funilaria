@@ -647,7 +647,7 @@ function rHistLoading(p){
   (async function(){
     try {
       var cls = await sbSelect('checklists',
-        'select=id,placa,data,tem_complemento,created_at,tecnicos(nome)&order=created_at.desc');
+        'select=id,placa,data,tem_complemento,created_at,tecnicos(nome)&order=data.desc,created_at.desc');
 
       if(!cls || cls.length===0){ rHistData(p,[]); return; }
 
@@ -687,7 +687,10 @@ function rHistLoading(p){
 
 function rHistData(p, checklists){
   _allChecklists = checklists || [];
-  p.innerHTML='<button class="back-link" onclick="voltarHome()">&#x2190; Voltar</button>'
+  p.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
+    +'<button class="back-link" style="margin-bottom:0" onclick="voltarHome()">&#x2190; Voltar</button>'
+    +'<button onclick="atualizarHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px">&#x1F504; Atualizar</button>'
+  +'</div>'
     +'<div class="hist-filters">'
       +'<div class="hist-search-wrap"><span class="hist-search-icon">&#x1F50D;</span><input class="hist-search-input" type="text" id="hist-search" placeholder="Buscar por placa ou tecnico..."></div>'
       +'<button class="comp-filter-btn'+((_filtroComplemento)?' on':'')+'" id="btn-comp" onclick="toggleFiltroComplemento()">&#x1F527; Apenas com complemento</button>'
@@ -698,6 +701,12 @@ function rHistData(p, checklists){
   document.getElementById('hist-de').addEventListener('change',filtrarHist);
   document.getElementById('hist-ate').addEventListener('change',filtrarHist);
   renderHistList(_allChecklists);
+}
+
+function atualizarHistorico() {
+  var p = document.getElementById('pg');
+  if (!p) return;
+  rHistLoading(p);
 }
 function toggleFiltroComplemento(){
   _filtroComplemento = !_filtroComplemento;
@@ -838,9 +847,9 @@ function rDetData(p, res){
       var st=it.Status||'', stCls=st==='montado'?'montado':st==='desmontado'?'desmontado':'empty';
       var stLbl=st==='montado'?'Nao desmontado':st==='desmontado'?'Desmontado':'-';
       var fotos=(it.Foto||'').split('|').filter(function(u){ return u.trim(); });
-      var flagHtml = it.TipoFlag
-        ? '<div style="font-size:11px;font-weight:600;color:'+flagColors[it.TipoFlag]+';margin-top:3px">'+flagLabels[it.TipoFlag]+'</div>'
-        : '';
+      var flagHtml = '';
+      var tipoFlag = it.TipoFlag || (isRec(it.Recuperacao) ? 'recuperacao' : null);
+      if (tipoFlag) flagHtml = '<div style="font-size:11px;font-weight:600;color:'+flagColors[tipoFlag]+';margin-top:3px">'+flagLabels[tipoFlag]+'</div>';
       h+='<div class="det-item"><span class="det-ref">'+it.Ref+'</span><div style="flex:1"><div class="det-desc">'+it.Descricao+'</div>'+flagHtml+(it.Observacao?'<div class="det-obs">'+it.Observacao+'</div>':'');
       fotos.forEach(function(u,fi){ h+='<a class="det-foto-link" href="'+u.trim()+'" target="_blank">Foto '+(fi+1)+'</a>'; });
       h+='</div><span class="det-status '+stCls+'">'+stLbl+'</span></div>';
