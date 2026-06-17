@@ -300,6 +300,7 @@ var HEADERS     = {
 // ── AUTH ─────────────────────────────────────────────────────────────────────
 var _session = null;
 var _tecnico = null; // { id, nome, email }
+var _refreshTimer = null;
 
 function getAuthHeaders() {
   var token = _session ? _session.access_token : SUPABASE_KEY;
@@ -308,6 +309,46 @@ function getAuthHeaders() {
     'Authorization': 'Bearer ' + token,
     'Content-Type': 'application/json'
   };
+}
+
+// Wrapper que renova o token automaticamente em caso de 401
+async function sbFetch(url, options) {
+  var res = await fetch(url, options);
+  if ((res.status === 401 || res.status === 403) && _session && _session.refresh_token) {
+    var nova = await tentarRenovarSessao(_session.refresh_token);
+    if (nova) {
+      _session = nova;
+      localStorage.setItem('sb_session', JSON.stringify(_session));
+      var newOpts = Object.assign({}, options, {
+        headers: Object.assign({}, options.headers, { 'Authorization': 'Bearer ' + _session.access_token })
+      });
+      res = await fetch(url, newOpts);
+    } else {
+      localStorage.removeItem('sb_session');
+      _session = null; _tecnico = null;
+      renderLogin();
+      throw new Error('Sessão expirada. Faça login novamente.');
+    }
+  }
+  return res;
+}
+
+function agendarRefreshToken() {
+  if (_refreshTimer) clearInterval(_refreshTimer);
+  _refreshTimer = setInterval(async function() {
+    if (!_session || !_session.refresh_token) return;
+    var nova = await tentarRenovarSessao(_session.refresh_token);
+    if (nova) {
+      _session = nova;
+      localStorage.setItem('sb_session', JSON.stringify(_session));
+    } else {
+      clearInterval(_refreshTimer); _refreshTimer = null;
+      localStorage.removeItem('sb_session');
+      _session = null; _tecnico = null;
+      mostrarModal('Sessão expirada. Faça login novamente.', '&#x1F512;');
+      setTimeout(function(){ renderLogin(); }, 2000);
+    }
+  }, 50 * 60 * 1000); // 50 minutos
 }
 
 function renderLogin() {
@@ -349,6 +390,7 @@ function mostrarApp() {
     if (avt) avt.textContent = primeiro.charAt(0) + (ultimo ? ultimo.charAt(0) : '');
   }
   verificarUltimoChecklist();
+  agendarRefreshToken();
   restaurarEstado();
 }
 
@@ -465,7 +507,7 @@ async function iniciarSessaoLeitor(user) {
 
 async function sbUpdate(table, id, body) {
   var h = Object.assign({}, getAuthHeaders(), { 'Prefer': 'return=representation' });
-  var res = await fetch(API + '/' + table + '?id=eq.' + id, {
+  var res = await sbFetch(API + '/' + table + '?id=eq.' + id, {
     method: 'PATCH', headers: h, body: JSON.stringify(body)
   });
   if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
@@ -474,14 +516,14 @@ async function sbUpdate(table, id, body) {
 
 async function sbSelect(table, params) {
   var url = API + '/' + table + (params ? '?' + params : '');
-  var res = await fetch(url, { headers: getAuthHeaders() });
+  var res = await sbFetch(url, { headers: getAuthHeaders() });
   if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
   return res.json();
 }
 
 async function sbInsert(table, body) {
   var h = Object.assign({}, getAuthHeaders(), { 'Prefer': 'return=representation' });
-  var res = await fetch(API + '/' + table, { method: 'POST', headers: h, body: JSON.stringify(body) });
+  var res = await sbFetch(API + '/' + table, { method: 'POST', headers: h, body: JSON.stringify(body) });
   if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error(e.message || res.statusText); }
   var data = await res.json();
   return Array.isArray(data) ? data[0] : data;
@@ -492,7 +534,7 @@ async function uploadFoto(b64, path) {
   var blob = await fetchRes.blob();
   var url = SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + path;
   var token = _session ? _session.access_token : SUPABASE_KEY;
-  var res = await fetch(url, {
+  var res = await sbFetch(url, {
     method: 'POST',
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'image/jpeg' },
     body: blob
