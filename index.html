@@ -66,6 +66,8 @@ input:focus{outline:none;border-color:var(--brand);background:#fff}
 .shp{font-family:'DM Mono',monospace;font-size:13px;color:var(--ink3);white-space:nowrap}
 .itm{background:var(--wh);border-radius:12px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden;border:2px solid transparent;transition:border-color .18s}
 .itm.montado{border-color:var(--gr)}.itm.desmontado{border-color:var(--or)}
+.itm.destaque{box-shadow:0 0 0 2px #D4A843 inset}
+.badge-destaque{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--am);background:var(--am-l);border:1px solid #D4A843;border-radius:20px;padding:2px 8px;margin-top:5px;width:fit-content}
 .itop{padding:15px 15px 11px;display:flex;align-items:flex-start;gap:10px}
 .iref{font-family:'DM Mono',monospace;font-size:12px;color:var(--brand);font-weight:500;min-width:28px;padding-top:2px;flex-shrink:0}
 .idesc{font-size:16px;font-weight:500;color:var(--ink);flex:1;line-height:1.5}
@@ -267,6 +269,10 @@ input[type=file]{display:none}
     <div id="modal-btns-confirm" style="display:none;gap:10px">
       <button class="modal-btn" style="background:var(--bg);color:var(--ink2);border:1.5px solid var(--rule);margin-bottom:0" onclick="modalRevisar()">Revisar</button>
       <button class="modal-btn" style="margin-top:10px" onclick="modalSim()">Sim, pode continuar</button>
+    </div>
+    <div id="modal-btns-complemento" style="display:none;flex-direction:column;gap:10px">
+      <button class="modal-btn" style="background:var(--bg);color:var(--ink2);border:1.5px solid var(--rule);margin-bottom:0" onclick="responderComplemento(false)">Nao teve complemento</button>
+      <button class="modal-btn" style="background:var(--bl);margin-top:10px" onclick="responderComplemento(true)">Sim, teve complemento</button>
     </div>
   </div>
 </div>
@@ -628,33 +634,35 @@ var TECNICOS = [
 ];
 
 var MAX_FOTOS = 2;
-var MAX_FOTOS_PECA = 4;
+var MAX_FOTOS_PECA = 6;
 
 var CAT = [
-  {s:'Frente',r:'0',d:'Capo'},{s:'Frente',r:'1',d:'Dobradicas e porcas do capo'},
+  {s:'Frente',r:'0',d:'Capo',destaque:true},{s:'Frente',r:'1',d:'Dobradicas e porcas do capo'},
   {s:'Frente',r:'2',d:'Batentes de ajuste'},{s:'Frente',r:'3',d:'Esguicho e mangueira do limpador'},
   {s:'Frente',r:'4',d:'Trinco e fechadura do capo'},{s:'Frente',r:'5',d:'Suporte da vareta de sustentacao do capo'},
-  {s:'Frente',r:'6',d:'Farol direito e esquerdo'},{s:'Frente',r:'7',d:'Para-choque'},
+  {s:'Frente',r:'6',d:'Farol direito e esquerdo',destaque:true},{s:'Frente',r:'7',d:'Para-choque',destaque:true},
   {s:'Frente',r:'8',d:'Guia direito e esquerdo'},{s:'Frente',r:'9',d:'Logotipo'},
-  {s:'Frente',r:'10',d:'Grade superior e inferior'},{s:'Frente',r:'11',d:'Frisos ou molduras'},
+  {s:'Frente',r:'10',d:'Grade superior e inferior',destaque:true},{s:'Frente',r:'11',d:'Frisos ou molduras'},
   {s:'Frente',r:'12',d:'Farol milha ou moldura do farol'},{s:'Frente',r:'13',d:'Aplique do para-choque'},
   {s:'Frente',r:'14',d:'Defletores'},{s:'Frente',r:'15',d:'Alma e absorvedor de impacto'},
   {s:'Frente',r:'16',d:'Painel dianteiro'},{s:'Frente',r:'17',d:'Sistema de arrefecimento (radiador)'},
   {s:'Frente',r:'18',d:'Reservatorio do esguicho'},
-  {s:'Lateral',r:'1',d:'Retrovisor (capa, lente e pisca)'},{s:'Lateral',r:'2',d:'Moldura do para-lama esquerdo e direito'},
+  {s:'Frente',r:'19',d:'Suporte da grade'},{s:'Frente',r:'20',d:'Parabarros dianteiro LD/LE'},
+  {s:'Lateral',r:'1',d:'Retrovisor (capa, lente e pisca)',destaque:true},{s:'Lateral',r:'2',d:'Moldura do para-lama esquerdo e direito',destaque:true},
   {s:'Lateral',r:'3',d:'Macaneta externa das portas'},{s:'Lateral',r:'4',d:'Pestanas das portas'},
   {s:'Lateral',r:'5',d:'Pisca do paralama esquerdo e direito'},{s:'Lateral',r:'6',d:'Maquina de vidro'},
   {s:'Lateral',r:'7',d:'Limitador da porta'},{s:'Lateral',r:'8',d:'Calotas'},
-  {s:'Traseira',r:'1',d:'Tampa da mala'},{s:'Traseira',r:'2',d:'Logotipo marca/emblema modelo'},
+  {s:'Traseira',r:'1',d:'Tampa da mala'},{s:'Traseira',r:'2',d:'Logotipo marca/emblema modelo',destaque:true},
   {s:'Traseira',r:'3',d:'Vidro da tampa'},{s:'Traseira',r:'4',d:'Spoiler da tampa'},
   {s:'Traseira',r:'5',d:'Break light (luz de freio)'},{s:'Traseira',r:'6',d:'Lanternas complementar e carroceria'},
   {s:'Traseira',r:'7',d:'Macaneta/botao abertura tampa'},{s:'Traseira',r:'8',d:'Fechadura da tampa'},
   {s:'Traseira',r:'9',d:'Trinco da fechadura da tampa'},{s:'Traseira',r:'10',d:'Batente de ajuste'},
-  {s:'Traseira',r:'11',d:'Para-choque'},{s:'Traseira',r:'12',d:'Spoiler do para-choque'},
+  {s:'Traseira',r:'11',d:'Para-choque',destaque:true},{s:'Traseira',r:'12',d:'Spoiler do para-choque'},
   {s:'Traseira',r:'13',d:'Refletor esquerdo e direito'},{s:'Traseira',r:'14',d:'Guia esquerdo e direito'},
   {s:'Traseira',r:'15',d:'Lanterna de placa'},{s:'Traseira',r:'16',d:'Painel e assoalho'},
   {s:'Traseira',r:'17',d:'Alma do para-choque'},{s:'Traseira',r:'18',d:'Estepe/chave/macaco/triangulo'},
   {s:'Traseira',r:'19',d:'Tampao do bagagito'},
+  {s:'Traseira',r:'20',d:'Parabarros traseiro LD/LE'},
   {s:'Interna',r:'1',d:'Bracos limpadores (para-brisa/vigia)'},{s:'Interna',r:'2',d:'Retrovisor interno'},
   {s:'Interna',r:'3',d:'Quebra sol esquerdo e direito'},{s:'Interna',r:'4',d:'Buzina'},
   {s:'Interna',r:'5',d:'Cinto de seguranca'},{s:'Interna',r:'6',d:'Acabamento das portas'},
@@ -675,23 +683,46 @@ function isRec(v){ return v===true||v===1||String(v).toUpperCase()==='TRUE'||Str
 
 // ── MODAL ────────────────────────────────────────────────────────────────────
 var _modalSimFn = null;
+var _complementoCallback = null;
 function mostrarModal(msg, icone){
   document.getElementById('modal-msg').textContent = msg;
   document.getElementById('modal-icon').innerHTML  = icone || '&#x26A0;&#xFE0F;';
   document.getElementById('modal-btns-single').style.display = '';
   document.getElementById('modal-btns-confirm').style.display = 'none';
+  document.getElementById('modal-btns-complemento').style.display = 'none';
   document.getElementById('modal-overlay').classList.add('on');
 }
 function mostrarConfirmacao(msg, icone, fnSim){
   document.getElementById('modal-msg').textContent = msg;
   document.getElementById('modal-icon').innerHTML  = icone || '&#x2753;';
   document.getElementById('modal-btns-single').style.display = 'none';
+  document.getElementById('modal-btns-complemento').style.display = 'none';
   var bc = document.getElementById('modal-btns-confirm');
   bc.style.display = 'flex'; bc.style.flexDirection = 'column'; bc.style.gap = '10px';
   _modalSimFn = fnSim;
   document.getElementById('modal-overlay').classList.add('on');
 }
-function fecharModal(){ document.getElementById('modal-overlay').classList.remove('on'); _modalSimFn = null; }
+function perguntarComplemento(callback){
+  document.getElementById('modal-msg').textContent = 'Esse carro teve complemento de pecas?';
+  document.getElementById('modal-icon').innerHTML  = '&#x1F527;';
+  document.getElementById('modal-btns-single').style.display = 'none';
+  document.getElementById('modal-btns-confirm').style.display = 'none';
+  document.getElementById('modal-btns-complemento').style.display = 'flex';
+  _complementoCallback = callback;
+  document.getElementById('modal-overlay').classList.add('on');
+}
+function responderComplemento(valor){
+  ST.complemento = valor;
+  document.getElementById('modal-overlay').classList.remove('on');
+  document.getElementById('modal-btns-complemento').style.display = 'none';
+  var cb = _complementoCallback; _complementoCallback = null;
+  if(cb) cb();
+}
+function fecharModal(){
+  document.getElementById('modal-overlay').classList.remove('on');
+  document.getElementById('modal-btns-complemento').style.display = 'none';
+  _modalSimFn = null;
+}
 function modalRevisar(){ fecharModal(); }
 function modalSim(){ var fn = _modalSimFn; fecharModal(); if(fn) fn(); }
 
@@ -997,6 +1028,21 @@ function rDetData(p, res){
 }
 
 // ── IDENTIFICACAO ────────────────────────────────────────────────────────────
+function listaDestaquesHtml(){
+  var porZona = {};
+  CAT.filter(function(i){ return i.destaque; }).forEach(function(i){
+    if(!porZona[i.s]) porZona[i.s]=[];
+    porZona[i.s].push(i.d);
+  });
+  var linhas = Object.keys(porZona).map(function(zona){
+    return '<div style="margin-top:4px"><strong>'+zona+':</strong> '+porZona[zona].join(', ')+'</div>';
+  }).join('');
+  return '<div class="notice" style="margin-top:10px;border-color:#D4A843;background:var(--am-l);color:var(--am)">'
+    +'<div style="font-weight:700">&#x2B50; Atencao redobrada nestes itens</div>'
+    +'<div style="font-size:13px;margin-top:2px">Foto obrigatoria mesmo que a peca nao seja desmontada:</div>'
+    +linhas
+  +'</div>';
+}
 function rHdr(p){
   if(!ST.data){ var _n=new Date(); ST.data=new Date(_n.getTime()-3*60*60*1000).toISOString().split('T')[0]; }
   var tecField = _tecnico
@@ -1007,7 +1053,8 @@ function rHdr(p){
     +'<div class="f2"><div><label>Placa *</label><input class="ip" type="text" id="i-pl" placeholder="ABC1234" maxlength="8"></div><div><label>Data *</label><input type="date" id="i-dt"></div></div>'
     +tecField
   +'</div>'
-  +'<div class="notice">Em caso de ausencia de peca, solicitar ao Facilitador o complemento.</div>';
+  +'<div class="notice">Em caso de ausencia de peca, solicitar ao Facilitador o complemento.</div>'
+  +listaDestaquesHtml();
   p.appendChild(div);
   document.getElementById('i-pl').value=ST.placa;
   document.getElementById('i-dt').value=ST.data;
@@ -1033,33 +1080,60 @@ function rSec(p,sec){
   p.appendChild(hdr);
   its.forEach(function(it){
     var kk=ky(it),cc=ST.chk[kk],d=document.createElement('div');
-    d.className='itm '+(cc.st||''); d.id='cd-'+kk;
-    d.innerHTML='<div class="itop"><span class="iref">'+it.r+'</span><span class="idesc">'+it.d+'</span><span class="idot '+(cc.st||'')+'" id="dt-'+kk+'"></span></div>'
-      +'<div class="sbr">'
-        +'<button class="sb '+(cc.st==='montado'?'mont':'')+'" data-k="'+kk+'" data-v="montado" onclick="setSt(this)"><span class="ic">&#x2713;</span>Nao desmontado</button>'
-        +'<button class="sb '+(cc.st==='desmontado'?'desm':'')+'" data-k="'+kk+'" data-v="desmontado" onclick="setSt(this)"><span class="ic">&#x1F527;</span>Desmontado</button>'
-      +'</div>'
-      +'<div class="xtr '+(cc.st==='desmontado'?'open':'')+'" id="ex-'+kk+'">'
-        +'<div class="flag-row" id="fr-'+kk+'">'
+    var isDestaque = !!it.destaque;
+    var xtrOpen = cc.st==='desmontado' || isDestaque;
+    d.className='itm '+(cc.st||'')+(isDestaque?' destaque':''); d.id='cd-'+kk;
+    var badgeHtml = isDestaque ? '<div class="badge-destaque">&#x2B50; Foto obrigatoria neste item</div>' : '';
+    var flagsHtml = cc.st==='desmontado'
+      ? '<div class="flag-row" id="fr-'+kk+'">'
           +'<button class="flag-btn troca'+(cc.flag==='troca'?' on':'')+'" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')">&#x1F504; Troca</button>'
           +'<button class="flag-btn recuperacao'+(cc.flag==='recuperacao'?' on':'')+'" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')">&#x1F9F0; Recuperacao</button>'
           +'<button class="flag-btn celula'+(cc.flag==='celula'?' on':'')+'" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')">&#x1F3ED; Celula</button>'
         +'</div>'
+      : '';
+    var fotoObrigMsg = cc.st==='desmontado'
+      ? 'Registre as 2 fotos obrigatorias para itens desmontados'
+      : 'Registre pelo menos 1 foto de evidencia deste item';
+    d.innerHTML='<div class="itop"><span class="iref">'+it.r+'</span><div style="flex:1"><span class="idesc">'+it.d+'</span>'+badgeHtml+'</div><span class="idot '+(cc.st||'')+'" id="dt-'+kk+'"></span></div>'
+      +'<div class="sbr">'
+        +'<button class="sb '+(cc.st==='montado'?'mont':'')+'" data-k="'+kk+'" data-v="montado" onclick="setSt(this)"><span class="ic">&#x2713;</span>Nao desmontado</button>'
+        +'<button class="sb '+(cc.st==='desmontado'?'desm':'')+'" data-k="'+kk+'" data-v="desmontado" onclick="setSt(this)"><span class="ic">&#x1F527;</span>Desmontado</button>'
+      +'</div>'
+      +'<div class="xtr '+(xtrOpen?'open':'')+'" id="ex-'+kk+'">'
+        +flagsHtml
         +'<textarea rows="2" placeholder="Observacao..." oninput="ST.chk[\''+kk+'\'].o=this.value">'+(cc.o||'')+'</textarea>'
         +'<div class="fotos-wrap" id="fw-'+kk+'"></div>'
-        +'<div class="foto-obrig" id="fo-'+kk+'">Foto obrigatoria para itens desmontados</div>'
+        +'<div class="foto-obrig" id="fo-'+kk+'">'+fotoObrigMsg+'</div>'
       +'</div>';
     p.appendChild(d);
     renderFotos(kk);
   });
 }
+function isDestaqueKey(kk){
+  var it = CAT.find(function(c){ return ky(c)===kk; });
+  return !!(it && it.destaque);
+}
 function setSt(btn){
   var kk=btn.dataset.k,v=btn.dataset.v,cc=ST.chk[kk];
   cc.st=cc.st===v?null:v; if(cc.st!=='desmontado') cc.flag=null;
   btn.closest('.sbr').querySelectorAll('.sb').forEach(function(b){ b.className='sb'; if(b.dataset.v==='montado'&&cc.st==='montado') b.className='sb mont'; if(b.dataset.v==='desmontado'&&cc.st==='desmontado') b.className='sb desm'; });
-  document.getElementById('cd-'+kk).className='itm '+(cc.st||'');
+  document.getElementById('cd-'+kk).className='itm '+(cc.st||'')+(isDestaqueKey(kk)?' destaque':'');
   document.getElementById('dt-'+kk).className='idot '+(cc.st||'');
-  var ex=document.getElementById('ex-'+kk); if(cc.st==='desmontado') ex.classList.add('open'); else ex.classList.remove('open');
+  var ex=document.getElementById('ex-'+kk);
+  if(cc.st==='desmontado' || isDestaqueKey(kk)) ex.classList.add('open'); else ex.classList.remove('open');
+  // Re-renderiza flags e mensagem de foto conforme o novo status
+  var fr=document.getElementById('fr-'+kk);
+  if(cc.st==='desmontado' && !fr){
+    var flagsWrap=document.createElement('div'); flagsWrap.className='flag-row'; flagsWrap.id='fr-'+kk;
+    flagsWrap.innerHTML='<button class="flag-btn troca" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')">&#x1F504; Troca</button>'
+      +'<button class="flag-btn recuperacao" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')">&#x1F9F0; Recuperacao</button>'
+      +'<button class="flag-btn celula" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')">&#x1F3ED; Celula</button>';
+    ex.insertBefore(flagsWrap, ex.firstChild);
+  } else if(cc.st!=='desmontado' && fr){
+    fr.remove();
+  }
+  var fo=document.getElementById('fo-'+kk);
+  if(fo) fo.textContent = cc.st==='desmontado' ? 'Registre as 2 fotos obrigatorias para itens desmontados' : 'Registre pelo menos 1 foto de evidencia deste item';
   var sec=kk.split('_')[0],its=CAT.filter(function(i){ return i.s===sec; }),dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
   var sp=document.getElementById('sp'); if(sp) sp.textContent=dn+'/'+its.length;
   uiSync();
@@ -1105,12 +1179,6 @@ function hFotoP(i,inp){ if(!inp.files||!inp.files[0]) return; if(!ST.pecas[i].fo
 function dFotoP(i,idx){ ST.pecas[i].fotos.splice(idx,1); renderFotosPeca(i); }
 
 // ── RESUMO ───────────────────────────────────────────────────────────────────
-function toggleComplemento(){
-  ST.complemento=!ST.complemento;
-  var t=document.getElementById('comp-toggle'), c=document.getElementById('comp-check');
-  if(t) t.className='comp-toggle'+(ST.complemento?' on':'');
-  if(c) c.innerHTML=ST.complemento?'&#x2713;':'';
-}
 function rResumo(p){
   var mo=[],de=[],troca=[],rec=[],celula=[],pend=[];
   CAT.forEach(function(i){ var cc=ST.chk[ky(i)]; if(cc.st==='montado') mo.push(i); else if(cc.st==='desmontado'){ de.push(i); if(cc.flag==='troca') troca.push(i); else if(cc.flag==='recuperacao') rec.push(i); else if(cc.flag==='celula') celula.push(i); }else pend.push(i); });
@@ -1122,11 +1190,6 @@ function rResumo(p){
     +'<div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div>'
   +'</div>';
   if(pend.length>0) h+='<div class="wn">'+pend.length+' item(ns) sem avaliacao.</div>';
-  h+='<div class="comp-toggle'+(ST.complemento?' on':'')+'" id="comp-toggle" onclick="toggleComplemento()">'
-    +'<span class="comp-icon">&#x1F527;</span>'
-    +'<div class="comp-text"><div class="comp-title">Esse carro teve complemento?</div><div class="comp-sub">Toque para marcar/desmarcar</div></div>'
-    +'<div class="comp-check" id="comp-check">'+(ST.complemento?'&#x2713;':'')+'</div>'
-  +'</div>';
   h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(ST.placa||'-').toUpperCase()+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(ST.data?ST.data.split('-').reverse().join('/'):'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(ST.td||'-')+'</span></div></div>';
   var flagLabels = {troca:'&#x1F504; Troca',recuperacao:'&#x1F9F0; Recuperacao',celula:'&#x1F3ED; Celula'};
   [['troca',troca],['recuperacao',rec],['celula',celula]].forEach(function(pair){
@@ -1151,11 +1214,16 @@ function goNext(){
     function prosseguirSecao(){
       // Em modo de edição as fotos já estão no banco — não valida
       if(!ST._editId){
-        var semFoto=its.filter(function(i){ var cc=ST.chk[ky(i)]; return cc.st==='desmontado'&&cc.fotos.length===0; });
+        var semFoto=its.filter(function(i){
+          var cc=ST.chk[ky(i)];
+          if(cc.st==='desmontado') return cc.fotos.length < MAX_FOTOS;
+          if(i.destaque && cc.st==='montado') return cc.fotos.length < 1;
+          return false;
+        });
         if(semFoto.length>0){
           semFoto.forEach(function(it){ var fo=document.getElementById('fo-'+ky(it)); if(fo) fo.classList.add('show'); });
           var first=document.getElementById('cd-'+ky(semFoto[0])); if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
-          mostrarModal('Registre pelo menos 1 foto para cada item desmontado. ('+semFoto.length+' pendente(s))','&#x1F4F7;');
+          mostrarModal('Registre as fotos obrigatorias antes de continuar. ('+semFoto.length+' pendente(s))','&#x1F4F7;');
           return;
         }
       }
@@ -1178,7 +1246,12 @@ function goNext(){
     prosseguirSecao();
     return;
   }
-  if(s==='resumo'){ if(ST._editId) salvarEdicao(); else enviar(); return; }
+  if(s==='resumo'){
+    perguntarComplemento(function(){
+      if(ST._editId) salvarEdicao(); else enviar();
+    });
+    return;
+  }
   ST.step++; render();
 }
 function goBack(){ if(ST.step===0){ ST.mode='home'; render(); return; } ST.step--; render(); }
