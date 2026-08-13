@@ -648,7 +648,7 @@ var CAT = [
   {s:'Frente',r:'16',d:'Painel dianteiro'},{s:'Frente',r:'17',d:'Sistema de arrefecimento (radiador)'},
   {s:'Frente',r:'18',d:'Reservatorio do esguicho'},
   {s:'Frente',r:'19',d:'Suporte da grade'},{s:'Frente',r:'20',d:'Parabarros dianteiro LD/LE'},
-  {s:'Lateral',r:'1',d:'Retrovisor (capa, lente e pisca)',destaque:true},{s:'Lateral',r:'2',d:'Moldura do para-lama esquerdo e direito',destaque:true},
+  {s:'Lateral',r:'1',d:'Retrovisor (capa, lente e pisca)',destaque:true,fotoLimite:4},{s:'Lateral',r:'2',d:'Moldura do para-lama esquerdo e direito',destaque:true},
   {s:'Lateral',r:'3',d:'Macaneta externa das portas'},{s:'Lateral',r:'4',d:'Pestanas das portas'},
   {s:'Lateral',r:'5',d:'Pisca do paralama esquerdo e direito'},{s:'Lateral',r:'6',d:'Maquina de vidro'},
   {s:'Lateral',r:'7',d:'Limitador da porta'},{s:'Lateral',r:'8',d:'Calotas'},
@@ -1064,11 +1064,16 @@ function rHdr(p){
 }
 
 // ── ITENS ────────────────────────────────────────────────────────────────────
+function maxFotosPara(kk){
+  var it = CAT.find(function(c){ return ky(c)===kk; });
+  return (it && it.fotoLimite) || MAX_FOTOS;
+}
 function renderFotos(kk){
   var cc=ST.chk[kk], wrap=document.getElementById('fw-'+kk); if(!wrap) return;
+  var limite = maxFotosPara(kk);
   var html='';
   cc.fotos.forEach(function(b64,fi){ html+='<div class="foto-thumb-wrap"><img class="foto-thumb" src="'+b64+'"><button class="foto-del-btn" onclick="delFotoItem(\''+kk+'\','+fi+')">&#x2715;</button></div>'; });
-  if(cc.fotos.length<MAX_FOTOS){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'fi-'+kk+'\').click()">&#x1F4F7; Foto '+(cc.fotos.length+1)+'/'+MAX_FOTOS+'</button><input type="file" id="fi-'+kk+'" accept="image/*" capture="environment" onchange="addFotoItem(\''+kk+'\',this)">'; }
+  if(cc.fotos.length<limite){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'fi-'+kk+'\').click()">&#x1F4F7; Foto '+(cc.fotos.length+1)+'/'+limite+'</button><input type="file" id="fi-'+kk+'" accept="image/*" capture="environment" onchange="addFotoItem(\''+kk+'\',this)">'; }
   wrap.innerHTML=html;
   var obrig=document.getElementById('fo-'+kk); if(obrig) obrig.classList.remove('show');
 }
@@ -1146,7 +1151,7 @@ function setFlag(kk, tipo){
   salvarRascunho();
 }
 function compress(file,cb){ var r=new FileReader(); r.onload=function(e){ var img=new Image(); img.onload=function(){ var M=900,w=img.width,h=img.height; if(w>M){h=h*M/w;w=M;} if(h>M){w=w*M/h;h=M;} var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',.75)); }; img.src=e.target.result; }; r.readAsDataURL(file); }
-function addFotoItem(kk,inp){ if(!inp.files||!inp.files[0]) return; var cc=ST.chk[kk]; if(cc.fotos.length>=MAX_FOTOS) return; compress(inp.files[0],function(b64){ cc.fotos.push(b64); renderFotos(kk); }); }
+function addFotoItem(kk,inp){ if(!inp.files||!inp.files[0]) return; var cc=ST.chk[kk]; if(cc.fotos.length>=maxFotosPara(kk)) return; compress(inp.files[0],function(b64){ cc.fotos.push(b64); renderFotos(kk); }); }
 function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); }
 
 // ── PECAS REMOVIDAS ──────────────────────────────────────────────────────────
