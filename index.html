@@ -535,18 +535,21 @@ async function sbInsert(table, body) {
   return Array.isArray(data) ? data[0] : data;
 }
 
+var UPLOAD_WORKER_URL = 'https://checklist-upload.ramon-silva.workers.dev';
+
 async function uploadFoto(b64, path) {
   var fetchRes = await fetch(b64);
   var blob = await fetchRes.blob();
-  var url = SUPABASE_URL + '/storage/v1/object/' + BUCKET + '/' + path;
   var token = _session ? _session.access_token : SUPABASE_KEY;
+  var url = UPLOAD_WORKER_URL + '?path=' + encodeURIComponent(path);
   var res = await sbFetch(url, {
     method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'image/jpeg' },
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'image/jpeg' },
     body: blob
   });
-  if (!res.ok) { var e = await res.json().catch(function(){ return {}; }); throw new Error('Upload: ' + (e.error || res.statusText)); }
-  return { storagePath: path, url: SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + path };
+  if (!res.ok) { var errText = await res.text().catch(function(){ return res.statusText; }); throw new Error('Upload: ' + errText); }
+  var data = await res.json();
+  return { storagePath: data.path, url: data.url };
 }
 
 // ── RASCUNHO + ESTADO DE NAVEGAÇÃO ──────────────────────────
