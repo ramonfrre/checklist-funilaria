@@ -1450,7 +1450,20 @@ document.getElementById('logout-area').style.display = 'none';
 iniciarSessao();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js');
+  navigator.serviceWorker.register('./service-worker.js').then(function(reg) {
+    setInterval(function() { reg.update(); }, 10 * 60 * 1000);
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') reg.update();
+    });
+  });
+
+  // Quando uma versão nova assume o controle, recarrega a página automaticamente
+  var swAtualizando = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    if (swAtualizando) return;
+    swAtualizando = true;
+    location.reload();
+  });
 }
 </script>
 </body>
