@@ -266,9 +266,19 @@ input[type=file]{display:none}
 .home-btn.edit .home-btn-ico{background:#FFF3EB}
 /* EDIT MODE BANNER */
 .edit-banner{background:var(--am-l);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;color:var(--am);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.svg-i{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex-shrink:0}
+.svg-i.i-warn{color:var(--or)}.svg-i.i-err{color:var(--rd)}.svg-i.i-ok{color:var(--gr)}.svg-i.i-info{color:var(--bl)}
+.modal-icon{color:var(--ink2)}
+.modal-icon .svg-i{width:44px;height:44px;stroke-width:1.7}
+.home-btn.new .home-btn-ico{color:var(--brand)}
+.home-btn.hist .home-btn-ico{color:var(--pu)}
+.foto-spin .svg-i{color:var(--ink);width:24px;height:24px}
+.foto-del-btn .svg-i{width:12px;height:12px;stroke-width:3}
+.hist-search-icon .svg-i{color:var(--ink3)}
 </style>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol><symbol id="i-chev-l" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol><symbol id="i-chev-r" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol><symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol><symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol><symbol id="i-spinner" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></symbol><symbol id="i-undo" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol><symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol><symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol><symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol><symbol id="i-clipboard" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-folder" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol><symbol id="i-wifi-off" viewBox="0 0 24 24"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol></defs></svg>
 <div class="topbar">
   <div class="tb1">
     <div class="brand">
@@ -289,7 +299,7 @@ input[type=file]{display:none}
   <div class="tb3"><span class="tbs" id="tbs">INICIO</span><span class="tbp" id="tbp"></span></div>
   </div>
 </div>
-<div class="offline-bar" id="offline-bar">&#x1F4F6; Sem conexao — as fotos nao enviadas serao retomadas quando a internet voltar</div>
+<div class="offline-bar" id="offline-bar"><svg class="svg-i" aria-hidden="true"><use href="#i-wifi-off"/></svg> Sem conexao — as fotos nao enviadas serao retomadas quando a internet voltar</div>
 <div class="scroll-area" id="sa"><div class="pg" id="pg"></div></div>
 <div class="bnav hidden" id="bnav">
   <button class="nb nb-bk" id="bbk" onclick="goBack()">Voltar</button>
@@ -297,7 +307,7 @@ input[type=file]{display:none}
 </div>
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
-    <div class="modal-icon" id="modal-icon">&#x26A0;&#xFE0F;</div>
+    <div class="modal-icon" id="modal-icon"><svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg></div>
     <div class="modal-msg" id="modal-msg"></div>
     <div id="modal-btns-single"><button class="modal-btn" onclick="fecharModal()">OK</button></div>
     <div id="modal-btns-confirm" style="display:none;gap:10px">
@@ -385,7 +395,7 @@ function agendarRefreshToken() {
       clearInterval(_refreshTimer); _refreshTimer = null;
       localStorage.removeItem('sb_session');
       _session = null; _tecnico = null;
-      mostrarModal('Sessão expirada. Faça login novamente.', '&#x1F512;');
+      mostrarModal('Sessão expirada. Faça login novamente.', '<svg class="svg-i" aria-hidden="true"><use href="#i-lock"/></svg>');
       setTimeout(function(){ renderLogin(); }, 2000);
     }
   }, 50 * 60 * 1000); // 50 minutos
@@ -701,12 +711,12 @@ function compartilharChecklist() {
   copiarLinkChecklist(url);
 }
 function copiarLinkChecklist(url) {
-  function ok() { mostrarModal('Link copiado! Cole na conversa para enviar este checklist.', '&#x1F517;'); }
+  function ok() { mostrarModal('Link copiado! Cole na conversa para enviar este checklist.', '<svg class="svg-i" aria-hidden="true"><use href="#i-link"/></svg>'); }
   function fallback() {
     try {
       var ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); ok();
-    } catch(e) { mostrarModal(url, '&#x1F517;'); }
+    } catch(e) { mostrarModal(url, '<svg class="svg-i" aria-hidden="true"><use href="#i-link"/></svg>'); }
   }
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(ok).catch(fallback);
   else fallback();
@@ -733,7 +743,7 @@ function restaurarEstado() {
       if (snap && snap.placa) {
         var restaurado = restaurarRascunho();
         render();
-        if (restaurado) mostrarModal('Checklist restaurado! Seu progresso e fotos ja enviadas foram recuperados.','&#x2705;');
+        if (restaurado) mostrarModal('Checklist restaurado! Seu progresso e fotos ja enviadas foram recuperados.','<svg class="svg-i i-ok" aria-hidden="true"><use href="#i-check-circle"/></svg>');
         return;
       }
     }
@@ -815,7 +825,7 @@ var _modalSimFn = null;
 var _complementoCallback = null;
 function mostrarModal(msg, icone){
   document.getElementById('modal-msg').textContent = msg;
-  document.getElementById('modal-icon').innerHTML  = icone || '&#x26A0;&#xFE0F;';
+  document.getElementById('modal-icon').innerHTML  = icone || '<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>';
   document.getElementById('modal-btns-single').style.display = '';
   document.getElementById('modal-btns-confirm').style.display = 'none';
   document.getElementById('modal-btns-complemento').style.display = 'none';
@@ -823,7 +833,7 @@ function mostrarModal(msg, icone){
 }
 function mostrarConfirmacao(msg, icone, fnSim){
   document.getElementById('modal-msg').textContent = msg;
-  document.getElementById('modal-icon').innerHTML  = icone || '&#x2753;';
+  document.getElementById('modal-icon').innerHTML  = icone || '<svg class="svg-i i-info" aria-hidden="true"><use href="#i-help"/></svg>';
   document.getElementById('modal-btns-single').style.display = 'none';
   document.getElementById('modal-btns-complemento').style.display = 'none';
   var bc = document.getElementById('modal-btns-confirm');
@@ -833,7 +843,7 @@ function mostrarConfirmacao(msg, icone, fnSim){
 }
 function perguntarComplemento(callback){
   document.getElementById('modal-msg').textContent = 'Esse carro teve complemento de pecas?';
-  document.getElementById('modal-icon').innerHTML  = '&#x1F527;';
+  document.getElementById('modal-icon').innerHTML  = '<svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg>';
   document.getElementById('modal-btns-single').style.display = 'none';
   document.getElementById('modal-btns-confirm').style.display = 'none';
   document.getElementById('modal-btns-complemento').style.display = 'flex';
@@ -898,13 +908,13 @@ function uiSync(){
 // ── HOME ─────────────────────────────────────────────────────────────────────
 function rHome(p){
   var novoBtnHtml = _modo === 'tecnico'
-    ? '<button class="home-btn new" onclick="iniciarNovo()"><div class="home-btn-ico">&#x1F4CB;</div><div><div class="home-btn-title">Novo Checklist</div><div class="home-btn-sub">Iniciar vistoria de desmontagem</div></div></button>'
+    ? '<button class="home-btn new" onclick="iniciarNovo()"><div class="home-btn-ico"><svg class="svg-i" aria-hidden="true"><use href="#i-clipboard"/></svg></div><div><div class="home-btn-title">Novo Checklist</div><div class="home-btn-sub">Iniciar vistoria de desmontagem</div></div></button>'
     : '';
   p.innerHTML='<div class="home-wrap">'
     +'<div class="home-title">Checklist Funilaria</div>'
     +'<div class="home-sub">Selecione uma opcao para continuar</div>'
     +novoBtnHtml
-    +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico">&#x1F5C2;&#xFE0F;</div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
+    +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico"><svg class="svg-i" aria-hidden="true"><use href="#i-folder"/></svg></div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
   +'</div>';
 }
 function novoUploadId(){
@@ -926,8 +936,8 @@ function verHistorico(){ ST.mode='hist'; render(); }
 
 function rHistLoading(p){
   p.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
-    +'<button class="back-link" style="margin-bottom:0" onclick="voltarHome()">&#x2190; Voltar</button>'
-    +'<button onclick="verHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px">&#x1F504; Atualizar</button>'
+    +'<button class="back-link" style="margin-bottom:0" onclick="voltarHome()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Voltar</button>'
+    +'<button onclick="verHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Atualizar</button>'
   +'</div>'
   +'<div style="text-align:center;padding:30px;color:#888;font-size:15px">Carregando...</div>';
 
@@ -973,7 +983,7 @@ function rHistLoading(p){
 
       rHistData(p, checklists);
     } catch(e) {
-      p.innerHTML='<button class="back-link" onclick="voltarHome()">&#x2190; Voltar</button>'
+      p.innerHTML='<button class="back-link" onclick="voltarHome()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Voltar</button>'
         +'<div class="hist-empty">Erro ao carregar: '+e.message+'</div>';
     }
   })();
@@ -982,13 +992,13 @@ function rHistLoading(p){
 function rHistData(p, checklists){
   _allChecklists = checklists || [];
   p.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
-    +'<button class="back-link" style="margin-bottom:0" onclick="voltarHome()">&#x2190; Voltar</button>'
-    +'<button onclick="atualizarHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px">&#x1F504; Atualizar</button>'
+    +'<button class="back-link" style="margin-bottom:0" onclick="voltarHome()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Voltar</button>'
+    +'<button onclick="atualizarHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Atualizar</button>'
   +'</div>'
     +'<div class="hist-filters">'
-      +'<div class="hist-search-wrap"><span class="hist-search-icon">&#x1F50D;</span><input class="hist-search-input" type="text" id="hist-search" placeholder="Buscar por placa ou tecnico..."></div>'
-      +'<button class="comp-filter-btn'+((_filtroComplemento)?' on':'')+'" id="btn-comp" onclick="toggleFiltroComplemento()">&#x1F527; Apenas com complemento</button>'
-      +'<div class="hist-date-row"><div class="hist-date-group"><label>De</label><input class="hist-date-input" type="date" id="hist-de"></div><div class="hist-date-group"><label>Ate</label><input class="hist-date-input" type="date" id="hist-ate"></div><button class="hist-clear-btn" onclick="limparFiltros()">&#x2715;</button></div>'
+      +'<div class="hist-search-wrap"><span class="hist-search-icon"><svg class="svg-i" aria-hidden="true"><use href="#i-search"/></svg></span><input class="hist-search-input" type="text" id="hist-search" placeholder="Buscar por placa ou tecnico..."></div>'
+      +'<button class="comp-filter-btn'+((_filtroComplemento)?' on':'')+'" id="btn-comp" onclick="toggleFiltroComplemento()"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg> Apenas com complemento</button>'
+      +'<div class="hist-date-row"><div class="hist-date-group"><label>De</label><input class="hist-date-input" type="date" id="hist-de"></div><div class="hist-date-group"><label>Ate</label><input class="hist-date-input" type="date" id="hist-ate"></div><button class="hist-clear-btn" onclick="limparFiltros()"><svg class="svg-i" aria-hidden="true"><use href="#i-x"/></svg></button></div>'
     +'</div>'
     +'<div id="hist-list"></div>';
   document.getElementById('hist-search').addEventListener('input',filtrarHist);
@@ -1071,12 +1081,12 @@ function renderHistList(list){
       var desm=entry._desm||0, rec=entry._rec||0, total=entry._total||0;
       html+='<div class="hist-item'+(desm>0?' has-desm':'')+'" onclick="verDetalhe(\''+id+'\',\''+placa+'\')">'
         +'<div class="hist-time"><span class="hist-hora">'+(entry._hora||'--:--')+'</span></div>'
-        +'<div class="hist-info"><div class="hist-placa">'+placa+'</div><div class="hist-meta">&#x1F464; '+(entry.Tecnico_Desmontagem||'-')+'</div><div class="hist-stats">';
+        +'<div class="hist-info"><div class="hist-placa">'+placa+'</div><div class="hist-meta"><svg class="svg-i" aria-hidden="true"><use href="#i-user"/></svg> '+(entry.Tecnico_Desmontagem||'-')+'</div><div class="hist-stats">';
       if(desm>0)              html+='<span class="hist-stat de">'+desm+' desmontada'+(desm!==1?'s':'')+'</span>';
       if(rec>0)               html+='<span class="hist-stat re">'+rec+' recuperacao</span>';
       if(desm===0&&total>0)   html+='<span class="hist-stat ok">Todas nao desmontadas</span>';
-      if(entry._complemento)  html+='<span class="hist-stat comp">&#x1F527; Complemento</span>';
-      html+='</div></div><span class="hist-arrow">&#x203A;</span></div>';
+      if(entry._complemento)  html+='<span class="hist-stat comp"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg> Complemento</span>';
+      html+='</div></div><span class="hist-arrow"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-r"/></svg></span></div>';
     });
   });
   wrap.innerHTML=html;
@@ -1087,7 +1097,7 @@ function verDetalhe(id, placa){ ST.mode='det'; ST.detId=id; ST.detPlaca=placa; r
 
 function abrirFoto(src){
   var o=document.createElement('div'); o.className='foto-lightbox';
-  o.innerHTML='<img src="'+src+'" alt="Foto"><button class="fl-close">&#x2715;</button>';
+  o.innerHTML='<img src="'+src+'" alt="Foto"><button class="fl-close"><svg class="svg-i" aria-hidden="true"><use href="#i-x"/></svg></button>';
   o.onclick=function(){ o.remove(); };
   document.body.appendChild(o);
 }
@@ -1103,7 +1113,7 @@ function setDetFiltro(f){
 function rDetLoading(p){
   _detFiltro='todos';
   uiTop('DETALHES','',ST.detPlaca||'-');
-  p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()">&#x2190; Historico</button>'
+  p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Historico</button>'
     +'<div style="text-align:center;padding:30px;color:#888;font-size:15px">Carregando...</div>';
   document.getElementById('ls').classList.add('on');
   document.getElementById('lm').textContent='Carregando...';
@@ -1116,7 +1126,7 @@ function rDetLoading(p){
       if(!cl){
         document.getElementById('ls').classList.remove('on');
         p.innerHTML='<div style="text-align:center;padding:40px 20px">'
-          +'<div style="font-size:48px;margin-bottom:16px">&#x1F5D1;&#xFE0F;</div>'
+          +'<div style="font-size:48px;margin-bottom:16px"><svg class="svg-i" aria-hidden="true"><use href="#i-trash"/></svg></div>'
           +'<div style="font-size:17px;font-weight:600;color:var(--ink);margin-bottom:8px">Registro nao encontrado</div>'
           +'<div style="font-size:14px;color:var(--ink3);margin-bottom:24px">Este checklist foi excluido ou nao esta mais disponivel.</div>'
           +'<button class="snw" style="font-size:15px;padding:14px 28px" onclick="voltarDoDetalhe()">Voltar ao historico</button>'
@@ -1165,7 +1175,7 @@ function rDetLoading(p){
       rDetData(p, { checklist: mappedCl, itens: itensNormais, pecas: pecas });
     } catch(e) {
       document.getElementById('ls').classList.remove('on');
-      p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()">&#x2190; Historico</button>'
+      p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Historico</button>'
         +'<div class="hist-empty">Erro de conexao: '+e.message+'</div>';
     }
   })();
@@ -1176,7 +1186,7 @@ function rDetData(p, res){
   var c=res.checklist, itens=res.itens, pecas=res.pecas;
   if(c.Placa) ST.detPlaca=c.Placa;
   var mo=0,de=0,flagCount=0;
-  var flagLabels={'troca':'&#x1F504; Troca','recuperacao':'&#x1F9F0; Recuperacao','celula':'&#x1F3ED; Celula'};
+  var flagLabels={'troca':'<svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca','recuperacao':'<svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao','celula':'<svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula'};
   var flagColors={'troca':'var(--bl)','recuperacao':'var(--pu)','celula':'var(--gr)'};
   itens.forEach(function(it){ if(it.Status==='montado') mo++; else if(it.Status==='desmontado'){ de++; if(it.TipoFlag) flagCount++; } });
   var temComplemento=isRec(c.Complemento);
@@ -1185,16 +1195,16 @@ function rDetData(p, res){
     && c._editado === false
     && _ultimoChecklist && _ultimoChecklist.id === c._rawId;
   var h='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
-    +'<button class="back-link" style="margin-bottom:0" onclick="voltarDoDetalhe()">&#x2190; Historico</button>'
-    +'<button onclick="compartilharChecklist()" style="background:none;border:1.5px solid var(--rule);color:var(--ink2);font-size:13px;font-weight:600;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px">&#x1F517; Compartilhar</button>'
+    +'<button class="back-link" style="margin-bottom:0" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Historico</button>'
+    +'<button onclick="compartilharChecklist()" style="background:none;border:1.5px solid var(--rule);color:var(--ink2);font-size:13px;font-weight:600;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px"><svg class="svg-i" aria-hidden="true"><use href="#i-link"/></svg> Compartilhar</button>'
   +'</div>';
-  if(podeEditar) h+='<button style="display:flex;align-items:center;gap:8px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;width:100%;margin-bottom:14px" onclick="carregarParaEditar(\''+c._rawId+'\')">&#x270F;&#xFE0F; Editar este checklist (apenas uma vez)</button>';
+  if(podeEditar) h+='<button style="display:flex;align-items:center;gap:8px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;width:100%;margin-bottom:14px" onclick="carregarParaEditar(\''+c._rawId+'\')"><svg class="svg-i" aria-hidden="true"><use href="#i-edit"/></svg> Editar este checklist (apenas uma vez)</button>';
   h+='<div class="det-hero"><div class="plate"><div class="plate-top">BRASIL</div><div class="plate-num">'+(c.Placa||'-')+'</div></div>'
     +'<div class="det-hero-info">'
-      +'<div class="dh-row"><span class="dh-ic">&#x1F4C5;</span>'+(c.Data||'-')+'</div>'
-      +'<div class="dh-row"><span class="dh-ic">&#x1F552;</span>'+(c.Hora||'--:--')+'</div>'
-      +'<div class="dh-row"><span class="dh-ic">&#x1F464;</span>'+(c.Tecnico_Desmontagem||'-')+'</div>'
-      +(temComplemento?'<div class="dh-comp">&#x1F527; Teve complemento</div>':'')
+      +'<div class="dh-row"><span class="dh-ic"><svg class="svg-i" aria-hidden="true"><use href="#i-calendar"/></svg></span>'+(c.Data||'-')+'</div>'
+      +'<div class="dh-row"><span class="dh-ic"><svg class="svg-i" aria-hidden="true"><use href="#i-clock"/></svg></span>'+(c.Hora||'--:--')+'</div>'
+      +'<div class="dh-row"><span class="dh-ic"><svg class="svg-i" aria-hidden="true"><use href="#i-user"/></svg></span>'+(c.Tecnico_Desmontagem||'-')+'</div>'
+      +(temComplemento?'<div class="dh-comp"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg> Teve complemento</div>':'')
     +'</div></div>';
   h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Nao desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div></div>';
   h+='<div class="det-chips"><button class="det-chip'+(_detFiltro==='todos'?' on':'')+'" onclick="setDetFiltro(\'todos\')">Todos ('+itens.length+')</button><button class="det-chip'+(_detFiltro==='desm'?' on':'')+'" onclick="setDetFiltro(\'desm\')">Desmontados ('+de+')</button></div>';
@@ -1281,12 +1291,12 @@ function renderFotos(kk){
   var html='';
   cc.fotos.forEach(function(f,fi){
     var src=f.localPreview||f.url||'';
-    var overlay = f.status==='uploading' ? '<div class="foto-spin">&#x23F3;</div>'
-      : f.status==='error' ? '<button class="foto-retry-btn" onclick="retryFotoItem(\''+kk+'\','+fi+')">&#x21BB; tentar<br>novamente</button>'
+    var overlay = f.status==='uploading' ? '<div class="foto-spin"><svg class="svg-i" aria-hidden="true"><use href="#i-spinner"/></svg></div>'
+      : f.status==='error' ? '<button class="foto-retry-btn" onclick="retryFotoItem(\''+kk+'\','+fi+')"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> tentar<br>novamente</button>'
       : '';
-    html+='<div class="foto-thumb-wrap"><img class="foto-thumb'+(f.status==='uploading'?' uploading':'')+'" src="'+src+'">'+overlay+'<button class="foto-del-btn" onclick="delFotoItem(\''+kk+'\','+fi+')">&#x2715;</button></div>';
+    html+='<div class="foto-thumb-wrap"><img class="foto-thumb'+(f.status==='uploading'?' uploading':'')+'" src="'+src+'">'+overlay+'<button class="foto-del-btn" onclick="delFotoItem(\''+kk+'\','+fi+')"><svg class="svg-i" aria-hidden="true"><use href="#i-x"/></svg></button></div>';
   });
-  if(cc.fotos.length<limite){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'fi-'+kk+'\').click()">&#x1F4F7; Foto '+(cc.fotos.length+1)+'/'+limite+'</button><input type="file" id="fi-'+kk+'" accept="image/*" capture="environment" onchange="addFotoItem(\''+kk+'\',this)">'; }
+  if(cc.fotos.length<limite){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'fi-'+kk+'\').click()"><svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg> Foto '+(cc.fotos.length+1)+'/'+limite+'</button><input type="file" id="fi-'+kk+'" accept="image/*" capture="environment" onchange="addFotoItem(\''+kk+'\',this)">'; }
   wrap.innerHTML=html;
   var obrig=document.getElementById('fo-'+kk); if(obrig) obrig.classList.remove('show');
 }
@@ -1307,7 +1317,7 @@ function refreshSecaoHeader(){
   if(SECS.indexOf(s)<0) return;
   var el=document.getElementById('shdr-pend'); if(!el) return;
   var n=pendentesSecao(s).length;
-  el.textContent = n>0 ? ('📷 '+n+(n===1?' foto obrigatoria pendente nesta secao':' fotos obrigatorias pendentes nesta secao')) : '';
+  el.innerHTML = n>0 ? ('<svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg> '+n+(n===1?' foto obrigatoria pendente nesta secao':' fotos obrigatorias pendentes nesta secao')) : '';
   el.classList.toggle('show', n>0);
 }
 function rSec(p,sec){
@@ -1323,12 +1333,12 @@ function rSec(p,sec){
     var isDestaque = !!it.destaque;
     var xtrOpen = cc.st==='desmontado' || isDestaque;
     d.className='itm '+(cc.st||'')+(isDestaque?' destaque':''); d.id='cd-'+kk;
-    var bannerHtml = isDestaque ? '<div class="destaque-banner"><span class="ic">&#x1F4F7;</span>Foto obrigatoria neste item</div>' : '';
+    var bannerHtml = isDestaque ? '<div class="destaque-banner"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg></span>Foto obrigatoria neste item</div>' : '';
     var flagsHtml = cc.st==='desmontado'
       ? '<div class="flag-row" id="fr-'+kk+'">'
-          +'<button class="flag-btn troca'+(cc.flag==='troca'?' on':'')+'" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')">&#x1F504; Troca</button>'
-          +'<button class="flag-btn recuperacao'+(cc.flag==='recuperacao'?' on':'')+'" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')">&#x1F9F0; Recuperacao</button>'
-          +'<button class="flag-btn celula'+(cc.flag==='celula'?' on':'')+'" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')">&#x1F3ED; Celula</button>'
+          +'<button class="flag-btn troca'+(cc.flag==='troca'?' on':'')+'" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca</button>'
+          +'<button class="flag-btn recuperacao'+(cc.flag==='recuperacao'?' on':'')+'" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')"><svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao</button>'
+          +'<button class="flag-btn celula'+(cc.flag==='celula'?' on':'')+'" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')"><svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula</button>'
         +'</div>'
       : '';
     var fotoObrigMsg = cc.st==='desmontado'
@@ -1336,8 +1346,8 @@ function rSec(p,sec){
       : 'Registre pelo menos 1 foto de evidencia deste item';
     d.innerHTML=bannerHtml+'<div class="itop"><span class="iref">'+it.r+'</span><div style="flex:1"><span class="idesc">'+it.d+'</span></div><span class="idot '+(cc.st||'')+'" id="dt-'+kk+'"></span></div>'
       +'<div class="sbr">'
-        +'<button class="sb '+(cc.st==='montado'?'mont':'')+'" data-k="'+kk+'" data-v="montado" onclick="setSt(this)"><span class="ic">&#x2713;</span>Nao desmontado</button>'
-        +'<button class="sb '+(cc.st==='desmontado'?'desm':'')+'" data-k="'+kk+'" data-v="desmontado" onclick="setSt(this)"><span class="ic">&#x1F527;</span>Desmontado</button>'
+        +'<button class="sb '+(cc.st==='montado'?'mont':'')+'" data-k="'+kk+'" data-v="montado" onclick="setSt(this)"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-check"/></svg></span>Nao desmontado</button>'
+        +'<button class="sb '+(cc.st==='desmontado'?'desm':'')+'" data-k="'+kk+'" data-v="desmontado" onclick="setSt(this)"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg></span>Desmontado</button>'
       +'</div>'
       +'<div class="xtr '+(xtrOpen?'open':'')+'" id="ex-'+kk+'">'
         +flagsHtml
@@ -1366,9 +1376,9 @@ function setSt(btn){
   var fr=document.getElementById('fr-'+kk);
   if(cc.st==='desmontado' && !fr){
     var flagsWrap=document.createElement('div'); flagsWrap.className='flag-row'; flagsWrap.id='fr-'+kk;
-    flagsWrap.innerHTML='<button class="flag-btn troca" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')">&#x1F504; Troca</button>'
-      +'<button class="flag-btn recuperacao" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')">&#x1F9F0; Recuperacao</button>'
-      +'<button class="flag-btn celula" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')">&#x1F3ED; Celula</button>';
+    flagsWrap.innerHTML='<button class="flag-btn troca" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca</button>'
+      +'<button class="flag-btn recuperacao" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')"><svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao</button>'
+      +'<button class="flag-btn celula" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')"><svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula</button>';
     ex.insertBefore(flagsWrap, ex.firstChild);
   } else if(cc.st!=='desmontado' && fr){
     fr.remove();
@@ -1453,12 +1463,12 @@ function renderFotosPeca(i){
   var fotos=pec.fotos||[], html='';
   fotos.forEach(function(f,fi){
     var src=f.localPreview||f.url||'';
-    var overlay = f.status==='uploading' ? '<div class="foto-spin">&#x23F3;</div>'
-      : f.status==='error' ? '<button class="foto-retry-btn" onclick="retryFotoPeca('+i+','+fi+')">&#x21BB; tentar<br>novamente</button>'
+    var overlay = f.status==='uploading' ? '<div class="foto-spin"><svg class="svg-i" aria-hidden="true"><use href="#i-spinner"/></svg></div>'
+      : f.status==='error' ? '<button class="foto-retry-btn" onclick="retryFotoPeca('+i+','+fi+')"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> tentar<br>novamente</button>'
       : '';
-    html+='<div class="foto-thumb-wrap"><img class="foto-thumb'+(f.status==='uploading'?' uploading':'')+'" src="'+src+'">'+overlay+'<button class="foto-del-btn" onclick="dFotoP('+i+','+fi+')">&#x2715;</button></div>';
+    html+='<div class="foto-thumb-wrap"><img class="foto-thumb'+(f.status==='uploading'?' uploading':'')+'" src="'+src+'">'+overlay+'<button class="foto-del-btn" onclick="dFotoP('+i+','+fi+')"><svg class="svg-i" aria-hidden="true"><use href="#i-x"/></svg></button></div>';
   });
-  if(fotos.length<MAX_FOTOS_PECA){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'pfi-'+i+'\').click()">&#x1F4F7; Foto '+(fotos.length+1)+'/'+MAX_FOTOS_PECA+'</button><input type="file" id="pfi-'+i+'" accept="image/*" capture="environment" onchange="hFotoP('+i+',this)">'; }
+  if(fotos.length<MAX_FOTOS_PECA){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'pfi-'+i+'\').click()"><svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg> Foto '+(fotos.length+1)+'/'+MAX_FOTOS_PECA+'</button><input type="file" id="pfi-'+i+'" accept="image/*" capture="environment" onchange="hFotoP('+i+',this)">'; }
   wrap.innerHTML=html;
 }
 function rPecas(p){
@@ -1509,7 +1519,7 @@ function rResumo(p){
   +'</div>';
   if(pend.length>0) h+='<div class="wn">'+pend.length+' item(ns) sem avaliacao.</div>';
   h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(ST.placa||'-').toUpperCase()+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(ST.data?ST.data.split('-').reverse().join('/'):'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(ST.td||'-')+'</span></div></div>';
-  var flagLabels = {troca:'&#x1F504; Troca',recuperacao:'&#x1F9F0; Recuperacao',celula:'&#x1F3ED; Celula'};
+  var flagLabels = {troca:'<svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca',recuperacao:'<svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao',celula:'<svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula'};
   [['troca',troca],['recuperacao',rec],['celula',celula]].forEach(function(pair){
     var tipo=pair[0], lista=pair[1];
     if(!lista.length) return;
@@ -1525,7 +1535,7 @@ function rResumo(p){
 // ── NAVEGACAO ────────────────────────────────────────────────────────────────
 function goNext(){
   var s=STEPS[ST.step];
-  if(s==='hdr'){ if(!ST.placa||!ST.data||!ST.td){ mostrarModal('Preencha a Placa, a Data e confirme o Tecnico.','&#x1F4CB;'); return; } }
+  if(s==='hdr'){ if(!ST.placa||!ST.data||!ST.td){ mostrarModal('Preencha a Placa, a Data e confirme o Tecnico.','<svg class="svg-i" aria-hidden="true"><use href="#i-clipboard"/></svg>'); return; } }
   if(SECS.indexOf(s)>=0){
     var its=CAT.filter(function(i){ return i.s===s; });
     var pending=its.filter(function(i){ return !ST.chk[ky(i)].st; });
@@ -1538,7 +1548,7 @@ function goNext(){
       if(naoProntas.length>0){
         var temErro=naoProntas.some(function(i){ return ST.chk[ky(i)].fotos.some(function(f){ return f.status==='error'; }); });
         var firstNP=document.getElementById('cd-'+ky(naoProntas[0])); if(firstNP) firstNP.scrollIntoView({behavior:'smooth',block:'center'});
-        mostrarModal(temErro ? 'Uma ou mais fotos falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos terminar antes de continuar.', temErro?'&#x26A0;&#xFE0F;':'&#x23F3;');
+        mostrarModal(temErro ? 'Uma ou mais fotos falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos terminar antes de continuar.', temErro?'<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>':'<svg class="svg-i" aria-hidden="true"><use href="#i-clock"/></svg>');
         return;
       }
       // Em modo de edição as fotos minimas ja estao no banco — nao valida quantidade
@@ -1552,21 +1562,21 @@ function goNext(){
         if(semFoto.length>0){
           semFoto.forEach(function(it){ var fo=document.getElementById('fo-'+ky(it)); if(fo) fo.classList.add('show'); });
           var first=document.getElementById('cd-'+ky(semFoto[0])); if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
-          mostrarModal('Registre as fotos obrigatorias antes de continuar. ('+semFoto.length+' pendente(s))','&#x1F4F7;');
+          mostrarModal('Registre as fotos obrigatorias antes de continuar. ('+semFoto.length+' pendente(s))','<svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg>');
           return;
         }
       }
       ST.step++; render();
     }
     if(pending.length===its.length){
-      mostrarConfirmacao('Nenhum item foi avaliado nesta secao.\nConfirma que nenhum foi desmontado?','&#x2753;',function(){
+      mostrarConfirmacao('Nenhum item foi avaliado nesta secao.\nConfirma que nenhum foi desmontado?','<svg class="svg-i i-info" aria-hidden="true"><use href="#i-help"/></svg>',function(){
         its.forEach(function(it){ ST.chk[ky(it)].st='montado'; });
         prosseguirSecao();
       });
       return;
     }
     if(pending.length>0){
-      mostrarConfirmacao(pending.length+' item(ns) ainda sem avaliacao.\nOs itens pendentes nao foram desmontados?','&#x26A0;&#xFE0F;',function(){
+      mostrarConfirmacao(pending.length+' item(ns) ainda sem avaliacao.\nOs itens pendentes nao foram desmontados?','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>',function(){
         pending.forEach(function(it){ ST.chk[ky(it)].st='montado'; });
         prosseguirSecao();
       });
@@ -1579,7 +1589,7 @@ function goNext(){
     var pecasNaoProntas = ST.pecas.some(function(p){ return (p.fotos||[]).some(function(f){ return f.status==='uploading' || f.status==='error'; }); });
     if(pecasNaoProntas){
       var temErroP = ST.pecas.some(function(p){ return (p.fotos||[]).some(function(f){ return f.status==='error'; }); });
-      mostrarModal(temErroP ? 'Uma ou mais fotos de pecas removidas falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos de pecas removidas terminar antes de continuar.', temErroP?'&#x26A0;&#xFE0F;':'&#x23F3;');
+      mostrarModal(temErroP ? 'Uma ou mais fotos de pecas removidas falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos de pecas removidas terminar antes de continuar.', temErroP?'<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>':'<svg class="svg-i" aria-hidden="true"><use href="#i-clock"/></svg>');
       return;
     }
   }
@@ -1615,7 +1625,7 @@ function enviar(){
   (async function(){
     try {
       if(fotosPendentesGlobal()){
-        mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Volte e aguarde/tente novamente antes de enviar.','&#x26A0;&#xFE0F;');
+        mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Volte e aguarde/tente novamente antes de enviar.','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>');
         return;
       }
       loading('Buscando tecnico...');
@@ -1678,7 +1688,7 @@ function enviar(){
 
     } catch(e) {
       loadingOff();
-      mostrarModal('Erro ao salvar: '+e.message, '&#x274C;');
+      mostrarModal('Erro ao salvar: '+e.message, '<svg class="svg-i i-err" aria-hidden="true"><use href="#i-x-circle"/></svg>');
     }
   })();
 }
@@ -1687,7 +1697,7 @@ function sucesso(id){
   setNav(false);
   limparRascunho();
   _ultimoChecklist = null; // reset — o próximo login verifica de novo
-  document.getElementById('pg').innerHTML='<div class="sw"><div class="si">&#x2705;</div><div class="st">Checklist enviado!</div><div class="ss">Dados salvos no banco e fotos no Supabase Storage.</div><div class="sid">ID: '+id+'</div><button class="snw" onclick="voltarHome()">Voltar ao inicio</button></div>';
+  document.getElementById('pg').innerHTML='<div class="sw"><div class="si"><svg class="svg-i i-ok" aria-hidden="true"><use href="#i-check-circle"/></svg></div><div class="st">Checklist enviado!</div><div class="ss">Dados salvos no banco e fotos no Supabase Storage.</div><div class="sid">ID: '+id+'</div><button class="snw" onclick="voltarHome()">Voltar ao inicio</button></div>';
   uiTop('CONCLUIDO','','');
   verificarUltimoChecklist();
 }
@@ -1703,7 +1713,7 @@ async function carregarParaEditar(clId){
   try {
     var cls = await sbSelect('checklists', 'select=*&id=eq.'+clId);
     var cl  = cls && cls[0];
-    if(!cl){ loadingOff(); mostrarModal('Checklist nao encontrado.','&#x274C;'); return; }
+    if(!cl){ loadingOff(); mostrarModal('Checklist nao encontrado.','<svg class="svg-i i-err" aria-hidden="true"><use href="#i-x-circle"/></svg>'); return; }
 
     var itens = await sbSelect('checklist_itens',
       'select=id,zona,item,situacao,desmontado,recuperacao,tipo_flag,observacao&checklist_id=eq.'+clId+'&zona=neq.Pecas');
@@ -1735,13 +1745,13 @@ async function carregarParaEditar(clId){
     render();
   } catch(e) {
     loadingOff();
-    mostrarModal('Erro ao carregar: '+e.message,'&#x274C;');
+    mostrarModal('Erro ao carregar: '+e.message,'<svg class="svg-i i-err" aria-hidden="true"><use href="#i-x-circle"/></svg>');
   }
 }
 
 async function salvarEdicao(){
   if(fotosPendentesGlobal()){
-    mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Aguarde/tente novamente antes de salvar.','&#x26A0;&#xFE0F;');
+    mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Aguarde/tente novamente antes de salvar.','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>');
     return;
   }
   loading('Atualizando checklist...');
@@ -1781,7 +1791,7 @@ async function salvarEdicao(){
     sucesso(savedId);
   } catch(e) {
     loadingOff();
-    mostrarModal('Erro ao atualizar: '+e.message,'&#x274C;');
+    mostrarModal('Erro ao atualizar: '+e.message,'<svg class="svg-i i-err" aria-hidden="true"><use href="#i-x-circle"/></svg>');
   }
 }
 
