@@ -160,11 +160,16 @@ input[type=file]{display:none}
 .hist-stat.re{background:var(--pu-l);color:var(--pu)}
 .hist-stat.ok{background:var(--gr-l);color:var(--gr)}
 .hist-stat.comp{background:var(--bl-l);color:var(--bl)}
-.hist-item{background:var(--wh);border-radius:12px;box-shadow:var(--sh);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer}
+.hist-item{background:var(--wh);border-radius:12px;box-shadow:var(--sh);padding:13px 14px 13px 12px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;border-left:5px solid var(--gr)}
+.hist-item.has-desm{border-left-color:var(--or)}
 .hist-item:active{background:var(--bg)}
-.hist-placa{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:var(--ink);letter-spacing:.1em}
-.hist-info{flex:1}
-.hist-meta{font-size:13px;color:var(--ink3);margin-top:2px}
+.hist-time{display:flex;align-items:center;justify-content:center;min-width:56px;padding-right:12px;border-right:1px solid var(--rule);align-self:stretch}
+.hist-hora{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--ink);letter-spacing:.02em}
+.hist-placa{display:inline-block;font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--ink);letter-spacing:.1em;background:var(--bg);border:1.5px solid var(--rule);border-radius:7px;padding:2px 9px}
+.hist-info{flex:1;min-width:0}
+.hist-meta{font-size:13px;color:var(--ink3);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-day{position:sticky;top:-1px;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg);padding:10px 2px 8px;margin-top:4px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.hist-day-n{background:var(--rule);color:var(--ink2);border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600;flex-shrink:0}
 .hist-badge{font-size:11px;padding:4px 10px;border-radius:20px;background:var(--gr-l);color:var(--gr);font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap}
 .hist-arrow{color:var(--ink3);font-size:18px}
 .hist-empty{text-align:center;padding:40px 20px;color:var(--ink3);font-size:15px}
@@ -854,6 +859,8 @@ function rHistLoading(p){
           ID: c.id,
           Placa: c.placa,
           Data: c.data ? c.data.split('-').reverse().join('/') : '',
+          _iso: c.data || '',
+          _hora: horaChecklist(c.created_at),
           Tecnico_Desmontagem: c.tecnicos ? c.tecnicos.nome : '',
           Status: 'Concluido',
           _complemento: c.tem_complemento,
@@ -919,19 +926,57 @@ function limparFiltros(){
   var a=document.getElementById('hist-ate'); if(a) a.value='';
   renderHistList(_allChecklists);
 }
+// Hora em que o checklist foi registrado (created_at), sempre no fuso de Sao Paulo,
+// independente da configuracao do celular.
+var _fmtHora = null;
+try { _fmtHora = new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}); } catch(e) {}
+function horaChecklist(ts){
+  if(!ts) return '';
+  var d=new Date(ts); if(isNaN(d.getTime())) return '';
+  if(_fmtHora) return _fmtHora.format(d);
+  var l=new Date(d.getTime()-3*60*60*1000);
+  return ('0'+l.getUTCHours()).slice(-2)+':'+('0'+l.getUTCMinutes()).slice(-2);
+}
+var _DIAS_SEM=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+var _MESES_ANO=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function rotuloDia(iso){
+  if(!iso) return 'Sem data';
+  var hojeIso=new Date(Date.now()-3*60*60*1000).toISOString().slice(0,10);
+  var ontemIso=new Date(Date.now()-27*60*60*1000).toISOString().slice(0,10);
+  var p=iso.split('-'); if(p.length!==3) return iso;
+  var dt=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));
+  var base=_DIAS_SEM[dt.getUTCDay()]+', '+(+p[2])+' de '+_MESES_ANO[+p[1]-1];
+  if(iso===hojeIso) return 'Hoje · '+base;
+  if(iso===ontemIso) return 'Ontem · '+base;
+  return base;
+}
 function renderHistList(list){
   var wrap=document.getElementById('hist-list'); if(!wrap) return;
   if(!list||list.length===0){ wrap.innerHTML='<div class="hist-empty">Nenhum resultado encontrado.</div>'; return; }
-  var html='<div class="hist-count">'+list.length+' checklist'+(list.length!==1?'s':'')+'</div>';
+  var hojeIso=new Date(Date.now()-3*60*60*1000).toISOString().slice(0,10);
+  var hoje=list.filter(function(e){ return e._iso===hojeIso; }).length;
+  var html='<div class="hist-count">'+list.length+' checklist'+(list.length!==1?'s':'')+(hoje>0?' &middot; '+hoje+' hoje':'')+'</div>';
+  // A lista ja vem ordenada por data (mais recente primeiro): agrupa dias consecutivos
+  var grupos=[];
   list.forEach(function(entry){
-    var id=(entry.ID||'').replace(/'/g,''), placa=(entry.Placa||'-').replace(/'/g,'');
-    var desm=entry._desm||0, rec=entry._rec||0, total=entry._total||0;
-    html+='<div class="hist-item" onclick="verDetalhe(\''+id+'\',\''+placa+'\')"><div class="hist-info"><div class="hist-placa">'+placa+'</div><div class="hist-meta">'+(entry.Data||'')+' &middot; '+(entry.Tecnico_Desmontagem||'')+'</div><div class="hist-stats">';
-    if(desm>0)              html+='<span class="hist-stat de">'+desm+' desmontada'+(desm!==1?'s':'')+'</span>';
-    if(rec>0)               html+='<span class="hist-stat re">'+rec+' recuperacao</span>';
-    if(desm===0&&total>0)   html+='<span class="hist-stat ok">Todas nao desmontadas</span>';
-    if(entry._complemento)  html+='<span class="hist-stat comp">&#x1F527; Complemento</span>';
-    html+='</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0"><span class="hist-badge">Concluido</span><span class="hist-arrow">&#x203A;</span></div></div>';
+    var g=grupos[grupos.length-1];
+    if(!g||g.iso!==(entry._iso||'')){ g={iso:entry._iso||'',itens:[]}; grupos.push(g); }
+    g.itens.push(entry);
+  });
+  grupos.forEach(function(g){
+    html+='<div class="hist-day"><span>'+rotuloDia(g.iso)+'</span><span class="hist-day-n">'+g.itens.length+'</span></div>';
+    g.itens.forEach(function(entry){
+      var id=(entry.ID||'').replace(/'/g,''), placa=(entry.Placa||'-').replace(/'/g,'');
+      var desm=entry._desm||0, rec=entry._rec||0, total=entry._total||0;
+      html+='<div class="hist-item'+(desm>0?' has-desm':'')+'" onclick="verDetalhe(\''+id+'\',\''+placa+'\')">'
+        +'<div class="hist-time"><span class="hist-hora">'+(entry._hora||'--:--')+'</span></div>'
+        +'<div class="hist-info"><div class="hist-placa">'+placa+'</div><div class="hist-meta">&#x1F464; '+(entry.Tecnico_Desmontagem||'-')+'</div><div class="hist-stats">';
+      if(desm>0)              html+='<span class="hist-stat de">'+desm+' desmontada'+(desm!==1?'s':'')+'</span>';
+      if(rec>0)               html+='<span class="hist-stat re">'+rec+' recuperacao</span>';
+      if(desm===0&&total>0)   html+='<span class="hist-stat ok">Todas nao desmontadas</span>';
+      if(entry._complemento)  html+='<span class="hist-stat comp">&#x1F527; Complemento</span>';
+      html+='</div></div><span class="hist-arrow">&#x203A;</span></div>';
+    });
   });
   wrap.innerHTML=html;
 }
@@ -995,6 +1040,7 @@ function rDetLoading(p){
         _editado: cl.editado,
         Placa: cl.placa,
         Data: cl.data ? cl.data.split('-').reverse().join('/') : '',
+        Hora: horaChecklist(cl.created_at),
         Tecnico_Desmontagem: cl.tecnicos ? cl.tecnicos.nome : '',
         Complemento: cl.tem_complemento
       };
@@ -1023,7 +1069,7 @@ function rDetData(p, res){
   if(podeEditar) h+='<button style="display:flex;align-items:center;gap:8px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;width:100%;margin-bottom:14px" onclick="carregarParaEditar(\''+c._rawId+'\')">&#x270F;&#xFE0F; Editar este checklist (apenas uma vez)</button>';
   if(temComplemento) h+='<div class="comp-badge-det">&#x1F527; Este carro teve complemento</div>';
   h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Nao desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div></div>';
-  h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(c.Placa||'-')+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(c.Data||'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(c.Tecnico_Desmontagem||'-')+'</span></div><div class="ir"><span class="ik">Complemento</span><span class="iv" style="color:'+(temComplemento?'var(--bl)':'var(--ink3)')+'">'+(temComplemento?'Sim':'Nao')+'</span></div></div>';
+  h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(c.Placa||'-')+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(c.Data||'-')+'</span></div><div class="ir"><span class="ik">Hora</span><span class="iv">'+(c.Hora||'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(c.Tecnico_Desmontagem||'-')+'</span></div><div class="ir"><span class="ik">Complemento</span><span class="iv" style="color:'+(temComplemento?'var(--bl)':'var(--ink3)')+'">'+(temComplemento?'Sim':'Nao')+'</span></div></div>';
   ['Frente','Lateral','Traseira','Interna'].forEach(function(sec){
     var si=itens.filter(function(it){ return it.Secao===sec; }); if(!si.length) return;
     var ms=si.filter(function(i){ return i.Status==='montado'; }).length;
