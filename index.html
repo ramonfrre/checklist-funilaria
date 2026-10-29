@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--brand:#ff355a;--brand-l:#fff0f3;--brand-d:#c9203f;--or:#E8630A;--or-l:#FFF3EB;--ink:#111;--ink2:#3D3730;--ink3:#888;--rule:#E8E2DC;--bg:#F8F5F5;--wh:#fff;--gr:#1A7A3C;--gr-l:#E8F5EE;--rd:#C0281E;--rd-l:#FCECEA;--am:#7C5000;--am-l:#FFF7E0;--pu:#5B21B6;--pu-l:#EDE9FE;--bl:#1565C0;--bl-l:#E8F4FD;--sh:0 1px 5px rgba(0,0,0,.09)}
+:root{--brand:#ff355a;--brand-l:#fff0f3;--brand-d:#c9203f;--or:#E8630A;--or-l:#FFF3EB;--ink:#111;--ink2:#3D3730;--ink3:#676160;--rule:#E8E2DC;--bg:#F8F5F5;--wh:#fff;--gr:#1A7A3C;--gr-l:#E8F5EE;--rd:#C0281E;--rd-l:#FCECEA;--am:#7C5000;--am-l:#FFF7E0;--pu:#5B21B6;--pu-l:#EDE9FE;--bl:#1565C0;--bl-l:#E8F4FD;--sh:0 1px 5px rgba(0,0,0,.09)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;height:100dvh}
@@ -66,6 +66,8 @@ input:focus{outline:none;border-color:var(--brand);background:#fff}
 .shn{font-family:'DM Mono',monospace;font-size:12px;color:var(--brand);font-weight:500;white-space:nowrap}
 .sht{font-family:'Sora',sans-serif;font-size:17px;font-weight:700;color:var(--ink);flex:1}
 .shp{font-family:'DM Mono',monospace;font-size:13px;color:var(--ink3);white-space:nowrap}
+.shdr-pend{background:var(--pu-l);color:var(--pu);font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:9px;margin:-4px 0 14px;display:none}
+.shdr-pend.show{display:block}
 .itm{background:var(--wh);border-radius:12px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden;border:2px solid transparent;transition:border-color .18s}
 .itm.montado{border-color:var(--gr)}.itm.desmontado{border-color:var(--or)}
 .destaque-banner{display:flex;align-items:center;gap:7px;background:var(--pu);color:#fff;font-size:12.5px;font-weight:700;padding:9px 15px;letter-spacing:.02em}
@@ -1109,12 +1111,34 @@ function renderFotos(kk){
   wrap.innerHTML=html;
   var obrig=document.getElementById('fo-'+kk); if(obrig) obrig.classList.remove('show');
 }
+// Itens desta secao que ainda precisam de foto obrigatoria (destaque sem nenhuma foto,
+// ou desmontado sem o jogo completo) — usado no lembrete que fica no topo da secao.
+function pendentesSecao(sec){
+  if(ST._editId) return [];
+  var its=CAT.filter(function(i){ return i.s===sec; });
+  return its.filter(function(i){
+    var cc=ST.chk[ky(i)];
+    if(cc.st==='desmontado') return cc.fotos.length < MAX_FOTOS;
+    if(i.destaque) return cc.fotos.length < 1;
+    return false;
+  });
+}
+function refreshSecaoHeader(){
+  var s=STEPS[ST.step];
+  if(SECS.indexOf(s)<0) return;
+  var el=document.getElementById('shdr-pend'); if(!el) return;
+  var n=pendentesSecao(s).length;
+  el.textContent = n>0 ? ('📷 '+n+(n===1?' foto obrigatoria pendente nesta secao':' fotos obrigatorias pendentes nesta secao')) : '';
+  el.classList.toggle('show', n>0);
+}
 function rSec(p,sec){
   var its=CAT.filter(function(i){ return i.s===sec; });
   var dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
   var hdr=document.createElement('div'); hdr.className='shdr';
   hdr.innerHTML='<span class="shn">'+(SECS.indexOf(sec)+1)+'/4</span><span class="sht">'+sec+' do veiculo</span><span class="shp" id="sp">'+dn+'/'+its.length+'</span>';
   p.appendChild(hdr);
+  var pendHdr=document.createElement('div'); pendHdr.className='shdr-pend'; pendHdr.id='shdr-pend';
+  p.appendChild(pendHdr);
   its.forEach(function(it){
     var kk=ky(it),cc=ST.chk[kk],d=document.createElement('div');
     var isDestaque = !!it.destaque;
@@ -1145,6 +1169,7 @@ function rSec(p,sec){
     p.appendChild(d);
     renderFotos(kk);
   });
+  refreshSecaoHeader();
 }
 function isDestaqueKey(kk){
   var it = CAT.find(function(c){ return ky(c)===kk; });
@@ -1173,6 +1198,7 @@ function setSt(btn){
   if(fo) fo.textContent = cc.st==='desmontado' ? 'Registre as 2 fotos obrigatorias para itens desmontados' : 'Registre pelo menos 1 foto de evidencia deste item';
   var sec=kk.split('_')[0],its=CAT.filter(function(i){ return i.s===sec; }),dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
   var sp=document.getElementById('sp'); if(sp) sp.textContent=dn+'/'+its.length;
+  refreshSecaoHeader();
   uiSync();
   salvarRascunho();
 }
@@ -1185,14 +1211,45 @@ function setFlag(kk, tipo){
 function compress(file,cb){ var r=new FileReader(); r.onload=function(e){ var img=new Image(); img.onload=function(){ var M=720,w=img.width,h=img.height; if(w>M){h=h*M/w;w=M;} if(h>M){w=w*M/h;h=M;} var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',.6)); }; img.src=e.target.result; }; r.readAsDataURL(file); }
 // Envia a foto para o R2 assim que é tirada, em vez de esperar o fim do checklist —
 // assim uma travada/recarregamento no resumo final nao obriga a refazer as fotos.
+// Ponto de entrada publico: ignora chamadas repetidas enquanto ja existe um envio
+// (ou uma retentativa agendada) em andamento pra este slot, pra nao disparar upload
+// em duplicidade quando o botao "tentar novamente", a volta da conexao e a
+// retentativa automatica coincidirem.
 function enviarFotoSlot(slot, kk, render){
+  if(slot._inFlight) return;
+  _enviarFotoSlotTentativa(slot, kk, render, 0);
+}
+// Tenta o upload e, se falhar (rede instavel/offline), tenta de novo sozinho mais
+// 2 vezes com espera crescente antes de pedir pro tecnico tocar em "tentar novamente".
+// Isso evita que uma oscilacao rapida de sinal vire trabalho manual.
+function _enviarFotoSlotTentativa(slot, kk, render, tentativa){
+  slot._inFlight = true;
   slot.status='uploading'; render();
   var path = ST.uploadId+'/'+kk+'/'+Date.now()+'.jpg';
   uploadFoto(slot.localPreview, path).then(function(r){
+    slot._inFlight = false;
     slot.status='done'; slot.url=r.url; slot.storagePath=r.storagePath;
-    render(); salvarRascunho();
+    render(); salvarRascunho(); refreshSecaoHeader();
   }).catch(function(e){
-    slot.status='error'; render();
+    if(tentativa < 2){
+      setTimeout(function(){ _enviarFotoSlotTentativa(slot, kk, render, tentativa+1); }, 1500*(tentativa+1));
+    } else {
+      slot._inFlight = false;
+      slot.status='error'; render(); refreshSecaoHeader();
+    }
+  });
+}
+// Quando a internet volta (ou o app volta pro primeiro plano), reenvia sozinho
+// qualquer foto que tenha ficado travada em erro — sem precisar que o tecnico
+// ache e toque em cada botao "tentar novamente" manualmente.
+function retomarUploadsPendentes(){
+  if(!navigator.onLine) return;
+  CAT.forEach(function(it){
+    var kk=ky(it), cc=ST.chk[kk];
+    (cc.fotos||[]).forEach(function(f){ if(f.status==='error') enviarFotoSlot(f, kk, function(){ renderFotos(kk); }); });
+  });
+  (ST.pecas||[]).forEach(function(pc,i){
+    (pc.fotos||[]).forEach(function(f){ if(f.status==='error') enviarFotoSlot(f, 'pecas_'+i, function(){ renderFotosPeca(i); }); });
   });
 }
 function addFotoItem(kk,inp){
@@ -1209,7 +1266,7 @@ function retryFotoItem(kk,idx){
   var slot=ST.chk[kk].fotos[idx]; if(!slot) return;
   enviarFotoSlot(slot, kk, function(){ renderFotos(kk); });
 }
-function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); salvarRascunho(); }
+function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); refreshSecaoHeader(); salvarRascunho(); }
 
 // ── PECAS REMOVIDAS ──────────────────────────────────────────────────────────
 function renderFotosPeca(i){
@@ -1572,15 +1629,19 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Aviso de sem conexao: fotos ja ficam marcadas como "erro" e com retry manual,
-// mas isso deixa claro pro tecnico que o problema e a internet, nao o app.
+// Aviso de sem conexao, e reenvio automatico do que ficou pendente assim que
+// a internet volta (ou o app volta pro primeiro plano com internet disponivel) —
+// o tecnico nao precisa achar e tocar em cada "tentar novamente" manualmente.
 function atualizarStatusConexao() {
   var bar = document.getElementById('offline-bar');
   if (!bar) return;
   if (navigator.onLine) bar.classList.remove('show'); else bar.classList.add('show');
 }
-window.addEventListener('online', atualizarStatusConexao);
+window.addEventListener('online', function(){ atualizarStatusConexao(); retomarUploadsPendentes(); });
 window.addEventListener('offline', atualizarStatusConexao);
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'visible') retomarUploadsPendentes();
+});
 atualizarStatusConexao();
 </script>
 </body>
