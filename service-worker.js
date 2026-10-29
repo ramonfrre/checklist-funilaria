@@ -1,4 +1,4 @@
-const CACHE = 'checklist-v31';
+const CACHE = 'checklist-v32';
 const SHELL = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', function(e) {
