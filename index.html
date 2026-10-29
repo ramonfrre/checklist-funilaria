@@ -435,6 +435,8 @@ function mostrarApp() {
 }
 
 async function loginGoogle() {
+  // Guarda o link do checklist (se houver) para abrir direto depois do login
+  try { if (idDaRota(location.hash)) localStorage.setItem('cl_pending_link', JSON.stringify({ h: location.hash, t: Date.now() })); } catch(e) {}
   var redirect = window.location.href.split('?')[0].split('#')[0];
   window.location.href = SUPABASE_URL + '/auth/v1/authorize'
     + '?provider=google'
@@ -646,7 +648,83 @@ function salvarNavState() {
   try { sessionStorage.setItem('cl_nav', JSON.stringify({mode:ST.mode, detId:ST.detId||null, detPlaca:ST.detPlaca||null})); } catch(e){}
 }
 
+// ── LINK DIRETO PARA UM CHECKLIST (#/checklist/<id>) ─────────────────────────
+// O ID vai na URL (apos o #), entao qualquer registro pode ser enviado por link.
+// Usa so o hash: funciona no GitHub Pages sem configuracao e nao colide com
+// o #access_token do retorno do login.
+var ROTA_PREFIXO = '#/checklist/';
+var _detPushed = false;
+function idDaRota(hash) {
+  if (!hash || hash.indexOf(ROTA_PREFIXO) !== 0) return null;
+  var id = '';
+  try { id = decodeURIComponent(hash.slice(ROTA_PREFIXO.length)).trim(); } catch(e) { return null; }
+  // So aceita formato de UUID: o valor entra no filtro da consulta ao banco
+  return /^[0-9a-fA-F-]{8,64}$/.test(id) ? id : null;
+}
+function limparHashRota() {
+  if (location.hash.indexOf(ROTA_PREFIXO) === 0) history.replaceState(null, '', location.pathname + location.search);
+}
+function garantirHashRota() {
+  var alvo = ROTA_PREFIXO + ST.detId;
+  if (location.hash !== alvo) {
+    history.pushState(null, '', location.pathname + location.search + alvo);
+    _detPushed = true;
+  }
+}
+// Voltar dentro do app: se o detalhe foi aberto pela lista, volta no historico do
+// navegador (mantem o botao Voltar do celular coerente); se veio de um link, so
+// troca para a lista.
+function voltarDoDetalhe() {
+  if (_detPushed) { _detPushed = false; history.back(); }
+  else { limparHashRota(); verHistorico(); }
+}
+window.addEventListener('popstate', function() {
+  if (!_session || !_tecnico || ST.mode === 'checklist') return;
+  _detPushed = false;
+  var id = idDaRota(location.hash);
+  if (id) {
+    if (ST.detId !== id) ST.detPlaca = '-';
+    ST.mode = 'det'; ST.detId = id; render();
+  } else if (ST.mode === 'det') {
+    ST.mode = 'hist'; render();
+  }
+});
+function compartilharChecklist() {
+  var url = location.origin + location.pathname + ROTA_PREFIXO + ST.detId;
+  var titulo = 'Checklist ' + (ST.detPlaca && ST.detPlaca !== '-' ? ST.detPlaca : 'Funilaria');
+  if (navigator.share) {
+    navigator.share({ title: titulo, text: titulo, url: url }).catch(function(e) {
+      if (!e || e.name !== 'AbortError') copiarLinkChecklist(url);
+    });
+    return;
+  }
+  copiarLinkChecklist(url);
+}
+function copiarLinkChecklist(url) {
+  function ok() { mostrarModal('Link copiado! Cole na conversa para enviar este checklist.', '&#x1F517;'); }
+  function fallback() {
+    try {
+      var ta = document.createElement('textarea'); ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); ok();
+    } catch(e) { mostrarModal(url, '&#x1F517;'); }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(ok).catch(fallback);
+  else fallback();
+}
+
 function restaurarEstado() {
+  // 0. Link direto para um checklist (na URL, ou guardado antes do login)
+  var rotaId = idDaRota(location.hash);
+  try {
+    var pend = JSON.parse(localStorage.getItem('cl_pending_link') || 'null');
+    localStorage.removeItem('cl_pending_link');
+    if (!rotaId && pend && pend.h && (Date.now() - pend.t) < 15 * 60 * 1000) {
+      rotaId = idDaRota(pend.h);
+      if (rotaId) history.replaceState(null, '', location.pathname + location.search + ROTA_PREFIXO + rotaId);
+    }
+  } catch(e) {}
+  if (rotaId) { ST.mode = 'det'; ST.detId = rotaId; ST.detPlaca = '-'; render(); return; }
+
   // 1. Rascunho de checklist em andamento
   try {
     var raw = sessionStorage.getItem('cl_rascunho');
@@ -781,6 +859,7 @@ function modalSim(){ var fn = _modalSimFn; fecharModal(); if(fn) fn(); }
 function render(){
   salvarRascunho();
   salvarNavState();
+  if (ST.mode === 'det') garantirHashRota(); else { limparHashRota(); _detPushed = false; }
   var p = document.getElementById('pg'); p.innerHTML = '';
   document.getElementById('sa').scrollTop = 0;
   if(ST.mode==='home'){ rHome(p); setNav(false); uiTop('INICIO','','-'); return; }
@@ -1024,7 +1103,7 @@ function setDetFiltro(f){
 function rDetLoading(p){
   _detFiltro='todos';
   uiTop('DETALHES','',ST.detPlaca||'-');
-  p.innerHTML='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>'
+  p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()">&#x2190; Historico</button>'
     +'<div style="text-align:center;padding:30px;color:#888;font-size:15px">Carregando...</div>';
   document.getElementById('ls').classList.add('on');
   document.getElementById('lm').textContent='Carregando...';
@@ -1040,7 +1119,7 @@ function rDetLoading(p){
           +'<div style="font-size:48px;margin-bottom:16px">&#x1F5D1;&#xFE0F;</div>'
           +'<div style="font-size:17px;font-weight:600;color:var(--ink);margin-bottom:8px">Registro nao encontrado</div>'
           +'<div style="font-size:14px;color:var(--ink3);margin-bottom:24px">Este checklist foi excluido ou nao esta mais disponivel.</div>'
-          +'<button class="snw" style="font-size:15px;padding:14px 28px" onclick="verHistorico()">Voltar ao historico</button>'
+          +'<button class="snw" style="font-size:15px;padding:14px 28px" onclick="voltarDoDetalhe()">Voltar ao historico</button>'
         +'</div>';
         return;
       }
@@ -1086,7 +1165,7 @@ function rDetLoading(p){
       rDetData(p, { checklist: mappedCl, itens: itensNormais, pecas: pecas });
     } catch(e) {
       document.getElementById('ls').classList.remove('on');
-      p.innerHTML='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>'
+      p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()">&#x2190; Historico</button>'
         +'<div class="hist-empty">Erro de conexao: '+e.message+'</div>';
     }
   })();
@@ -1095,6 +1174,7 @@ function rDetLoading(p){
 function rDetData(p, res){
   _detRes=res;
   var c=res.checklist, itens=res.itens, pecas=res.pecas;
+  if(c.Placa) ST.detPlaca=c.Placa;
   var mo=0,de=0,flagCount=0;
   var flagLabels={'troca':'&#x1F504; Troca','recuperacao':'&#x1F9F0; Recuperacao','celula':'&#x1F3ED; Celula'};
   var flagColors={'troca':'var(--bl)','recuperacao':'var(--pu)','celula':'var(--gr)'};
@@ -1104,7 +1184,10 @@ function rDetData(p, res){
     && _tecnico && c._tecnicoId === _tecnico.id
     && c._editado === false
     && _ultimoChecklist && _ultimoChecklist.id === c._rawId;
-  var h='<button class="back-link" onclick="verHistorico()">&#x2190; Historico</button>';
+  var h='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
+    +'<button class="back-link" style="margin-bottom:0" onclick="voltarDoDetalhe()">&#x2190; Historico</button>'
+    +'<button onclick="compartilharChecklist()" style="background:none;border:1.5px solid var(--rule);color:var(--ink2);font-size:13px;font-weight:600;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px">&#x1F517; Compartilhar</button>'
+  +'</div>';
   if(podeEditar) h+='<button style="display:flex;align-items:center;gap:8px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;width:100%;margin-bottom:14px" onclick="carregarParaEditar(\''+c._rawId+'\')">&#x270F;&#xFE0F; Editar este checklist (apenas uma vez)</button>';
   h+='<div class="det-hero"><div class="plate"><div class="plate-top">BRASIL</div><div class="plate-num">'+(c.Placa||'-')+'</div></div>'
     +'<div class="det-hero-info">'
