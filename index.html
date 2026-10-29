@@ -108,6 +108,10 @@ textarea:focus{outline:none;border-color:var(--brand)}
 .foto-add-btn:active{background:var(--brand-d)}
 .foto-obrig{font-size:12px;color:var(--rd);font-weight:600;margin-top:4px;display:none}
 .foto-obrig.show{display:block}
+.foto-thumb.uploading{opacity:.5}
+.foto-spin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px;animation:fotospin 1s linear infinite;pointer-events:none}
+@keyframes fotospin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.foto-retry-btn{position:absolute;inset:0;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;line-height:1.2;font-family:'DM Sans',sans-serif}
 input[type=file]{display:none}
 .pc{background:var(--wh);border-radius:12px;box-shadow:var(--sh);padding:18px;margin-bottom:12px}
 .pn{font-family:'DM Mono',monospace;font-size:12px;color:var(--brand);font-weight:500;margin-bottom:7px;text-transform:uppercase;letter-spacing:.06em}
@@ -553,18 +557,24 @@ async function uploadFoto(b64, path) {
 }
 
 // ── RASCUNHO + ESTADO DE NAVEGAÇÃO ──────────────────────────
+// So as fotos ja enviadas (status 'done') viram {url, storagePath} no rascunho —
+// leve o bastante pra sessionStorage, e garante que uma foto ja no R2 nunca se perde.
+function fotosProntasSnap(fotos){
+  return (fotos||[]).filter(function(f){ return f.status==='done'; }).map(function(f){ return {url:f.url, storagePath:f.storagePath}; });
+}
 function salvarRascunho() {
   if (ST.mode !== 'checklist') return;
   try {
     var snap = {
       step: ST.step, placa: ST.placa, data: ST.data,
       td: ST.td, complemento: ST.complemento, _editId: ST._editId || null,
-      pecas: (ST.pecas||[]).map(function(p){ return {o:p.o||''}; }),
+      uploadId: ST.uploadId || null,
+      pecas: (ST.pecas||[]).map(function(p){ return {o:p.o||'', fotos:fotosProntasSnap(p.fotos)}; }),
       chk: {}
     };
     CAT.forEach(function(it){
       var kk=ky(it), cc=ST.chk[kk];
-      snap.chk[kk] = {st:cc.st, flag:cc.flag, o:cc.o||'', dbId:cc.dbId||null};
+      snap.chk[kk] = {st:cc.st, flag:cc.flag, o:cc.o||'', dbId:cc.dbId||null, fotos:fotosProntasSnap(cc.fotos)};
     });
     sessionStorage.setItem('cl_rascunho', JSON.stringify(snap));
   } catch(e){}
@@ -585,13 +595,19 @@ function restaurarRascunho() {
     ST.td=snap.td||(_tecnico?_tecnico.nome:'');
     ST.complemento=snap.complemento||false;
     ST._editId=snap._editId||null;
-    var temDesmontado=false;
+    ST.uploadId=snap.uploadId||novoUploadId();
     CAT.forEach(function(it){
       var kk=ky(it), s=snap.chk&&snap.chk[kk];
-      if(s){ ST.chk[kk]={st:s.st,flag:s.flag,o:s.o||'',fotos:[],dbId:s.dbId||null}; if(s.st==='desmontado') temDesmontado=true; }
+      var fotos=((s&&s.fotos)||[]).map(function(f){ return {status:'done', url:f.url, storagePath:f.storagePath, localPreview:null}; });
+      if(s){ ST.chk[kk]={st:s.st,flag:s.flag,o:s.o||'',fotos:fotos,dbId:s.dbId||null}; }
     });
-    if(snap.pecas) snap.pecas.forEach(function(p,i){ if(ST.pecas[i]){ST.pecas[i].o=p.o||'';ST.pecas[i].fotos=[];} });
-    return temDesmontado;
+    if(snap.pecas) snap.pecas.forEach(function(p,i){
+      if(ST.pecas[i]){
+        ST.pecas[i].o=p.o||'';
+        ST.pecas[i].fotos=((p.fotos)||[]).map(function(f){ return {status:'done', url:f.url, storagePath:f.storagePath, localPreview:null}; });
+      }
+    });
+    return true;
   } catch(e){ limparRascunho(); return false; }
 }
 
@@ -607,9 +623,9 @@ function restaurarEstado() {
     if (raw) {
       var snap = JSON.parse(raw);
       if (snap && snap.placa) {
-        var temFoto = restaurarRascunho();
+        var restaurado = restaurarRascunho();
         render();
-        if (temFoto) mostrarModal('Checklist restaurado!\nItens desmontados precisam de novas fotos.','&#x1F4F7;');
+        if (restaurado) mostrarModal('Checklist restaurado! Seu progresso e fotos ja enviadas foram recuperados.','&#x2705;');
         return;
       }
     }
@@ -780,9 +796,13 @@ function rHome(p){
     +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico">&#x1F5C2;&#xFE0F;</div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
   +'</div>';
 }
+function novoUploadId(){
+  return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2));
+}
 function iniciarNovo(){
   limparRascunho();
   ST.mode='checklist'; ST.step=0; ST._editId=null;
+  ST.uploadId=novoUploadId();
   CAT.forEach(function(i){ ST.chk[ky(i)]={st:null,flag:null,o:'',fotos:[],dbId:null}; });
   ST.placa=''; ST.data=''; ST.complemento=false;
   ST.pecas=[{o:'',fotos:[]},{o:'',fotos:[]}];
@@ -1075,7 +1095,13 @@ function renderFotos(kk){
   var cc=ST.chk[kk], wrap=document.getElementById('fw-'+kk); if(!wrap) return;
   var limite = maxFotosPara(kk);
   var html='';
-  cc.fotos.forEach(function(b64,fi){ html+='<div class="foto-thumb-wrap"><img class="foto-thumb" src="'+b64+'"><button class="foto-del-btn" onclick="delFotoItem(\''+kk+'\','+fi+')">&#x2715;</button></div>'; });
+  cc.fotos.forEach(function(f,fi){
+    var src=f.localPreview||f.url||'';
+    var overlay = f.status==='uploading' ? '<div class="foto-spin">&#x23F3;</div>'
+      : f.status==='error' ? '<button class="foto-retry-btn" onclick="retryFotoItem(\''+kk+'\','+fi+')">&#x21BB; tentar<br>novamente</button>'
+      : '';
+    html+='<div class="foto-thumb-wrap"><img class="foto-thumb'+(f.status==='uploading'?' uploading':'')+'" src="'+src+'">'+overlay+'<button class="foto-del-btn" onclick="delFotoItem(\''+kk+'\','+fi+')">&#x2715;</button></div>';
+  });
   if(cc.fotos.length<limite){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'fi-'+kk+'\').click()">&#x1F4F7; Foto '+(cc.fotos.length+1)+'/'+limite+'</button><input type="file" id="fi-'+kk+'" accept="image/*" capture="environment" onchange="addFotoItem(\''+kk+'\',this)">'; }
   wrap.innerHTML=html;
   var obrig=document.getElementById('fo-'+kk); if(obrig) obrig.classList.remove('show');
@@ -1154,14 +1180,45 @@ function setFlag(kk, tipo){
   salvarRascunho();
 }
 function compress(file,cb){ var r=new FileReader(); r.onload=function(e){ var img=new Image(); img.onload=function(){ var M=720,w=img.width,h=img.height; if(w>M){h=h*M/w;w=M;} if(h>M){w=w*M/h;h=M;} var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); cb(cv.toDataURL('image/jpeg',.6)); }; img.src=e.target.result; }; r.readAsDataURL(file); }
-function addFotoItem(kk,inp){ if(!inp.files||!inp.files[0]) return; var cc=ST.chk[kk]; if(cc.fotos.length>=maxFotosPara(kk)) return; compress(inp.files[0],function(b64){ cc.fotos.push(b64); renderFotos(kk); }); }
-function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); }
+// Envia a foto para o R2 assim que é tirada, em vez de esperar o fim do checklist —
+// assim uma travada/recarregamento no resumo final nao obriga a refazer as fotos.
+function enviarFotoSlot(slot, kk, render){
+  slot.status='uploading'; render();
+  var path = ST.uploadId+'/'+kk+'/'+Date.now()+'.jpg';
+  uploadFoto(slot.localPreview, path).then(function(r){
+    slot.status='done'; slot.url=r.url; slot.storagePath=r.storagePath;
+    render(); salvarRascunho();
+  }).catch(function(e){
+    slot.status='error'; render();
+  });
+}
+function addFotoItem(kk,inp){
+  if(!inp.files||!inp.files[0]) return;
+  var cc=ST.chk[kk]; if(cc.fotos.length>=maxFotosPara(kk)) return;
+  var file=inp.files[0]; inp.value='';
+  compress(file,function(b64){
+    var slot={status:'uploading',localPreview:b64,url:null,storagePath:null};
+    cc.fotos.push(slot);
+    enviarFotoSlot(slot, kk, function(){ renderFotos(kk); });
+  });
+}
+function retryFotoItem(kk,idx){
+  var slot=ST.chk[kk].fotos[idx]; if(!slot) return;
+  enviarFotoSlot(slot, kk, function(){ renderFotos(kk); });
+}
+function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); salvarRascunho(); }
 
 // ── PECAS REMOVIDAS ──────────────────────────────────────────────────────────
 function renderFotosPeca(i){
   var pec=ST.pecas[i], wrap=document.getElementById('pfw-'+i); if(!wrap) return;
   var fotos=pec.fotos||[], html='';
-  fotos.forEach(function(b64,fi){ html+='<div class="foto-thumb-wrap"><img class="foto-thumb" src="'+b64+'"><button class="foto-del-btn" onclick="dFotoP('+i+','+fi+')">&#x2715;</button></div>'; });
+  fotos.forEach(function(f,fi){
+    var src=f.localPreview||f.url||'';
+    var overlay = f.status==='uploading' ? '<div class="foto-spin">&#x23F3;</div>'
+      : f.status==='error' ? '<button class="foto-retry-btn" onclick="retryFotoPeca('+i+','+fi+')">&#x21BB; tentar<br>novamente</button>'
+      : '';
+    html+='<div class="foto-thumb-wrap"><img class="foto-thumb'+(f.status==='uploading'?' uploading':'')+'" src="'+src+'">'+overlay+'<button class="foto-del-btn" onclick="dFotoP('+i+','+fi+')">&#x2715;</button></div>';
+  });
   if(fotos.length<MAX_FOTOS_PECA){ html+='<button class="foto-add-btn" onclick="document.getElementById(\'pfi-'+i+'\').click()">&#x1F4F7; Foto '+(fotos.length+1)+'/'+MAX_FOTOS_PECA+'</button><input type="file" id="pfi-'+i+'" accept="image/*" capture="environment" onchange="hFotoP('+i+',this)">'; }
   wrap.innerHTML=html;
 }
@@ -1183,8 +1240,22 @@ function rPecas(p){
     renderFotosPeca(i);
   });
 }
-function hFotoP(i,inp){ if(!inp.files||!inp.files[0]) return; if(!ST.pecas[i].fotos) ST.pecas[i].fotos=[]; if(ST.pecas[i].fotos.length>=MAX_FOTOS_PECA) return; compress(inp.files[0],function(b){ ST.pecas[i].fotos.push(b); renderFotosPeca(i); }); }
-function dFotoP(i,idx){ ST.pecas[i].fotos.splice(idx,1); renderFotosPeca(i); }
+function hFotoP(i,inp){
+  if(!inp.files||!inp.files[0]) return;
+  if(!ST.pecas[i].fotos) ST.pecas[i].fotos=[];
+  if(ST.pecas[i].fotos.length>=MAX_FOTOS_PECA) return;
+  var file=inp.files[0]; inp.value='';
+  compress(file,function(b64){
+    var slot={status:'uploading',localPreview:b64,url:null,storagePath:null};
+    ST.pecas[i].fotos.push(slot);
+    enviarFotoSlot(slot, 'pecas_'+i, function(){ renderFotosPeca(i); });
+  });
+}
+function retryFotoPeca(i,idx){
+  var slot=ST.pecas[i].fotos[idx]; if(!slot) return;
+  enviarFotoSlot(slot, 'pecas_'+i, function(){ renderFotosPeca(i); });
+}
+function dFotoP(i,idx){ ST.pecas[i].fotos.splice(idx,1); renderFotosPeca(i); salvarRascunho(); }
 
 // ── RESUMO ───────────────────────────────────────────────────────────────────
 function rResumo(p){
@@ -1220,7 +1291,18 @@ function goNext(){
     var its=CAT.filter(function(i){ return i.s===s; });
     var pending=its.filter(function(i){ return !ST.chk[ky(i)].st; });
     function prosseguirSecao(){
-      // Em modo de edição as fotos já estão no banco — não valida
+      // Fotos ainda enviando ou com erro: nao deixa prosseguir (evita perder foto se a pagina travar)
+      var naoProntas=its.filter(function(i){
+        var cc=ST.chk[ky(i)];
+        return (cc.fotos||[]).some(function(f){ return f.status==='uploading' || f.status==='error'; });
+      });
+      if(naoProntas.length>0){
+        var temErro=naoProntas.some(function(i){ return ST.chk[ky(i)].fotos.some(function(f){ return f.status==='error'; }); });
+        var firstNP=document.getElementById('cd-'+ky(naoProntas[0])); if(firstNP) firstNP.scrollIntoView({behavior:'smooth',block:'center'});
+        mostrarModal(temErro ? 'Uma ou mais fotos falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos terminar antes de continuar.', temErro?'&#x26A0;&#xFE0F;':'&#x23F3;');
+        return;
+      }
+      // Em modo de edição as fotos minimas ja estao no banco — nao valida quantidade
       if(!ST._editId){
         var semFoto=its.filter(function(i){
           var cc=ST.chk[ky(i)];
@@ -1254,6 +1336,14 @@ function goNext(){
     prosseguirSecao();
     return;
   }
+  if(s==='pecas'){
+    var pecasNaoProntas = ST.pecas.some(function(p){ return (p.fotos||[]).some(function(f){ return f.status==='uploading' || f.status==='error'; }); });
+    if(pecasNaoProntas){
+      var temErroP = ST.pecas.some(function(p){ return (p.fotos||[]).some(function(f){ return f.status==='error'; }); });
+      mostrarModal(temErroP ? 'Uma ou mais fotos de pecas removidas falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos de pecas removidas terminar antes de continuar.', temErroP?'&#x26A0;&#xFE0F;':'&#x23F3;');
+      return;
+    }
+  }
   if(s==='resumo'){
     perguntarComplemento(function(){
       if(ST._editId) salvarEdicao(); else enviar();
@@ -1273,9 +1363,22 @@ var PECAS_LABELS = [
 function loading(msg){ document.getElementById('ls').classList.add('on'); document.getElementById('lm').textContent=msg||'Salvando...'; }
 function loadingOff(){ document.getElementById('ls').classList.remove('on'); }
 
+// Verifica se sobrou alguma foto nao enviada (travada ou com erro) antes de finalizar.
+// As fotos ja foram enviadas ao R2 no momento em que foram tiradas — aqui so falta
+// gravar as referencias no banco, por isso o envio final fica rapido e confiavel.
+function fotosPendentesGlobal(){
+  var pend=false;
+  CAT.forEach(function(it){ if((ST.chk[ky(it)].fotos||[]).some(function(f){ return f.status!=='done'; })) pend=true; });
+  (ST.pecas||[]).forEach(function(p){ if((p.fotos||[]).some(function(f){ return f.status!=='done'; })) pend=true; });
+  return pend;
+}
 function enviar(){
   (async function(){
     try {
+      if(fotosPendentesGlobal()){
+        mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Volte e aguarde/tente novamente antes de enviar.','&#x26A0;&#xFE0F;');
+        return;
+      }
       loading('Buscando tecnico...');
 
       var tecs = await sbSelect('tecnicos', 'select=id&nome=eq.'+encodeURIComponent(ST.td));
@@ -1284,13 +1387,14 @@ function enviar(){
 
       loading('Criando registro...');
       var cl = await sbInsert('checklists', {
+        id: ST.uploadId,
         placa: ST.placa,
         data: ST.data,
         tecnico_id: tecId,
         tem_complemento: ST.complemento || false
       });
 
-      // Inserir itens do checklist
+      // Inserir itens do checklist (fotos ja estao no R2 — so grava a referencia)
       for(var idx=0; idx<CAT.length; idx++){
         var it = CAT[idx];
         var cc = ST.chk[ky(it)];
@@ -1308,14 +1412,12 @@ function enviar(){
         });
 
         for(var fi=0; fi<(cc.fotos||[]).length; fi++){
-          loading('Enviando foto '+(fi+1)+' de '+it.d+'...');
-          var path = cl.id+'/'+item.id+'/'+fi+'.jpg';
-          var fResult = await uploadFoto(cc.fotos[fi], path);
-          await sbInsert('checklist_fotos', { item_id: item.id, storage_path: fResult.storagePath, url: fResult.url });
+          var foto = cc.fotos[fi];
+          await sbInsert('checklist_fotos', { item_id: item.id, storage_path: foto.storagePath, url: foto.url });
         }
       }
 
-      // Inserir pecas removidas
+      // Inserir pecas removidas (fotos ja estao no R2 — so grava a referencia)
       for(var pi=0; pi<ST.pecas.length; pi++){
         var pec = ST.pecas[pi];
         loading('Salvando peca '+(pi+1)+'...');
@@ -1327,10 +1429,8 @@ function enviar(){
         });
 
         for(var pfi=0; pfi<(pec.fotos||[]).length; pfi++){
-          loading('Enviando foto da peca '+(pi+1)+'...');
-          var pPath = cl.id+'/'+pitem.id+'/'+pfi+'.jpg';
-          var pfResult = await uploadFoto(pec.fotos[pfi], pPath);
-          await sbInsert('checklist_fotos', { item_id: pitem.id, storage_path: pfResult.storagePath, url: pfResult.url });
+          var pfoto = pec.fotos[pfi];
+          await sbInsert('checklist_fotos', { item_id: pitem.id, storage_path: pfoto.storagePath, url: pfoto.url });
         }
       }
 
@@ -1372,6 +1472,7 @@ async function carregarParaEditar(clId){
     loadingOff();
 
     ST._editId    = clId;
+    ST.uploadId   = clId;
     ST.mode       = 'checklist';
     ST.step       = 0;
     ST.placa      = cl.placa;
@@ -1400,6 +1501,10 @@ async function carregarParaEditar(clId){
 }
 
 async function salvarEdicao(){
+  if(fotosPendentesGlobal()){
+    mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Aguarde/tente novamente antes de salvar.','&#x26A0;&#xFE0F;');
+    return;
+  }
   loading('Atualizando checklist...');
   try {
     // Atualiza o header do checklist
@@ -1423,12 +1528,10 @@ async function salvarEdicao(){
         tipo_flag: cc.flag || null,
         observacao: cc.o || null
       });
-      // Upload de novas fotos (se houver)
+      // Novas fotos adicionadas na edicao ja foram enviadas ao R2 — so grava a referencia
       for(var fi=0; fi<(cc.fotos||[]).length; fi++){
-        loading('Enviando foto adicional...');
-        var path = ST._editId+'/'+cc.dbId+'/edit_'+Date.now()+'_'+fi+'.jpg';
-        var fResult = await uploadFoto(cc.fotos[fi], path);
-        await sbInsert('checklist_fotos', { item_id: cc.dbId, storage_path: fResult.storagePath, url: fResult.url });
+        var foto = cc.fotos[fi];
+        await sbInsert('checklist_fotos', { item_id: cc.dbId, storage_path: foto.storagePath, url: foto.url });
       }
     }
 
