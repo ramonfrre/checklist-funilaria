@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Checklist Funilaria">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#ff355a">
+<meta name="theme-color" content="#1B2030">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.svg">
 <title>Checklist Funilaria</title>
@@ -18,15 +18,15 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column;height:100vh;height:100dvh}
-.topbar{background:#ff355a;padding:14px 16px 10px;flex-shrink:0}
+.topbar{background:#1B2030;padding:14px 16px 10px;flex-shrink:0}
 .tb1{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .brand{display:flex;align-items:center;gap:12px}
-.logo{width:52px;height:52px;border-radius:10px;background:#ff355a;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:18px;color:#fff;font-weight:700;flex-shrink:0;border:1.5px solid rgba(255,255,255,.3)}
+.logo{width:52px;height:52px;border-radius:10px;background:transparent;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:18px;color:#fff;font-weight:700;flex-shrink:0;border:1.5px solid rgba(255,255,255,.3)}
 .bn{font-family:'Sora',sans-serif;font-size:16px;color:#fff;font-weight:700}
 .bs{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
 .ptag{font-family:'DM Mono',monospace;font-size:14px;background:rgba(255,255,255,.2);color:#fff;padding:7px 12px;border-radius:8px;letter-spacing:.1em;font-weight:700;min-width:68px;text-align:center;border:1.5px solid rgba(255,255,255,.4)}
-.pb-wrap{height:4px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden}
-.pb-fill{height:100%;background:#fff;border-radius:2px;transition:width .3s}
+.pb-wrap{height:4px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
+.pb-fill{height:100%;background:var(--brand);border-radius:2px;transition:width .3s}
 .tb3{display:flex;justify-content:space-between;margin-top:7px}
 .tbs{font-size:12px;color:rgba(255,255,255,.9);font-family:'DM Mono',monospace;letter-spacing:.05em;text-transform:uppercase;font-weight:500}
 .tbp{font-size:12px;color:#fff;font-family:'DM Mono',monospace;font-weight:600}
@@ -283,7 +283,7 @@ input[type=file]{display:none}
   <div class="tb1">
     <div class="brand">
       <div class="logo" id="logo-wrap"><img src="./Logo_03.png" alt="Kovi" style="width:100%;height:100%;object-fit:contain;padding:4px;mix-blend-mode:screen"></div>
-      <div><div class="bn">Checklist Funilaria</div><div class="bs">Desmontagem de Pecas</div></div>
+      <div><div class="bn">Checklist Funilaria</div><div class="bs">Desmontagem de Peças</div></div>
     </div>
     <div class="ptag" id="ptag">-</div>
   </div>
@@ -296,14 +296,14 @@ input[type=file]{display:none}
   </div>
   <div id="topbar-content">
   <div class="pb-wrap"><div class="pb-fill" id="pf" style="width:0%"></div></div>
-  <div class="tb3"><span class="tbs" id="tbs">INICIO</span><span class="tbp" id="tbp"></span></div>
+  <div class="tb3"><span class="tbs" id="tbs">INÍCIO</span><span class="tbp" id="tbp"></span></div>
   </div>
 </div>
-<div class="offline-bar" id="offline-bar"><svg class="svg-i" aria-hidden="true"><use href="#i-wifi-off"/></svg> Sem conexao — as fotos nao enviadas serao retomadas quando a internet voltar</div>
+<div class="offline-bar" id="offline-bar"><svg class="svg-i" aria-hidden="true"><use href="#i-wifi-off"/></svg> Sem conexão — as fotos não enviadas serão retomadas quando a internet voltar</div>
 <div class="scroll-area" id="sa"><div class="pg" id="pg"></div></div>
 <div class="bnav hidden" id="bnav">
   <button class="nb nb-bk" id="bbk" onclick="goBack()">Voltar</button>
-  <button class="nb nb-nx" id="bnx" onclick="goNext()">Proximo</button>
+  <button class="nb nb-nx" id="bnx" onclick="goNext()">Próximo</button>
 </div>
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
@@ -315,7 +315,7 @@ input[type=file]{display:none}
       <button class="modal-btn" style="margin-top:10px" onclick="modalSim()">Sim, pode continuar</button>
     </div>
     <div id="modal-btns-complemento" style="display:none;flex-direction:column;gap:10px">
-      <button class="modal-btn" style="background:var(--bg);color:var(--ink2);border:1.5px solid var(--rule);margin-bottom:0" onclick="responderComplemento(false)">Nao teve complemento</button>
+      <button class="modal-btn" style="background:var(--bg);color:var(--ink2);border:1.5px solid var(--rule);margin-bottom:0" onclick="responderComplemento(false)">Não teve complemento</button>
       <button class="modal-btn" style="background:var(--bl);margin-top:10px" onclick="responderComplemento(true)">Sim, teve complemento</button>
     </div>
   </div>
@@ -743,7 +743,7 @@ function restaurarEstado() {
       if (snap && snap.placa) {
         var restaurado = restaurarRascunho();
         render();
-        if (restaurado) mostrarModal('Checklist restaurado! Seu progresso e fotos ja enviadas foram recuperados.','<svg class="svg-i i-ok" aria-hidden="true"><use href="#i-check-circle"/></svg>');
+        if (restaurado) mostrarModal('Checklist restaurado! Seu progresso e as fotos já enviadas foram recuperados.','<svg class="svg-i i-ok" aria-hidden="true"><use href="#i-check-circle"/></svg>');
         return;
       }
     }
@@ -805,6 +805,16 @@ var CAT = [
   {s:'Interna',r:'5',d:'Cinto de seguranca'},{s:'Interna',r:'6',d:'Acabamento das portas'},
   {s:'Interna',r:'7',d:'Comando dos vidros (janelas)'}
 ];
+// Acentuacao dos nomes de itens SO na exibicao: o texto original (sem acento) continua
+// sendo o valor gravado e comparado no banco, entao registros antigos seguem batendo.
+var _ACENTOS = {capo:'capô',dobradicas:'dobradiças',sustentacao:'sustentação',reservatorio:'reservatório',macaneta:'maçaneta',maquina:'máquina',botao:'botão',triangulo:'triângulo',tampao:'tampão',seguranca:'segurança',bracos:'braços',pecas:'peças',peca:'peça'};
+function ac(s){
+  if(!s) return s;
+  return String(s).replace(/[A-Za-z]+/g,function(w){
+    var r=_ACENTOS[w.toLowerCase()]; if(!r) return w;
+    return w===w.toUpperCase() && w.length>1 ? r.toUpperCase() : (w.charAt(0)===w.charAt(0).toUpperCase() ? r.charAt(0).toUpperCase()+r.slice(1) : r);
+  });
+}
 var SECS  = ['Frente','Lateral','Traseira','Interna'];
 var STEPS = ['hdr','Frente','Lateral','Traseira','Interna','pecas','resumo'];
 var ST    = {step:0,placa:'',data:'',td:'',chk:{},pecas:[{o:'',fotos:[]},{o:'',fotos:[]}],complemento:false,mode:'home'};
@@ -842,7 +852,7 @@ function mostrarConfirmacao(msg, icone, fnSim){
   document.getElementById('modal-overlay').classList.add('on');
 }
 function perguntarComplemento(callback){
-  document.getElementById('modal-msg').textContent = 'Esse carro teve complemento de pecas?';
+  document.getElementById('modal-msg').textContent = 'Esse carro teve complemento de peças?';
   document.getElementById('modal-icon').innerHTML  = '<svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg>';
   document.getElementById('modal-btns-single').style.display = 'none';
   document.getElementById('modal-btns-confirm').style.display = 'none';
@@ -872,8 +882,8 @@ function render(){
   if (ST.mode === 'det') garantirHashRota(); else { limparHashRota(); _detPushed = false; }
   var p = document.getElementById('pg'); p.innerHTML = '';
   document.getElementById('sa').scrollTop = 0;
-  if(ST.mode==='home'){ rHome(p); setNav(false); uiTop('INICIO','','-'); return; }
-  if(ST.mode==='hist'){ rHistLoading(p); setNav(false); uiTop('HISTORICO','','-'); return; }
+  if(ST.mode==='home'){ rHome(p); setNav(false); uiTop('INÍCIO','','-'); return; }
+  if(ST.mode==='hist'){ rHistLoading(p); setNav(false); uiTop('HISTÓRICO','','-'); return; }
   if(ST.mode==='det') { rDetLoading(p);  setNav(false); return; }
   var s = STEPS[ST.step];
   if(s==='hdr')              rHdr(p);
@@ -894,13 +904,13 @@ function setNav(show, isSend){
   n.classList.remove('hidden');
   var nb = document.getElementById('bnx');
   if(isSend){ nb.className='nb nb-sd'; nb.textContent='Enviar checklist'; }
-  else       { nb.className='nb nb-nx'; nb.textContent='Proximo'; }
+  else       { nb.className='nb nb-nx'; nb.textContent='Próximo'; }
   document.getElementById('bbk').style.display = '';
 }
 function uiSync(){
   var s   = STEPS[ST.step];
   var pct = Math.round(ndone()/CAT.length*100)+'%';
-  var nm  = {hdr:'IDENTIFICACAO',Frente:'FRENTE',Lateral:'LATERAL',Traseira:'TRASEIRA',Interna:'INTERNA',pecas:'PECAS REMOVIDAS',resumo:'RESUMO'};
+  var nm  = {hdr:'IDENTIFICAÇÃO',Frente:'FRENTE',Lateral:'LATERAL',Traseira:'TRASEIRA',Interna:'INTERNA',pecas:'PEÇAS REMOVIDAS',resumo:'RESUMO'};
   uiTop(nm[s]||s, pct+' concluido', (ST.placa||'-').toUpperCase());
   setNav(true, s==='resumo');
 }
@@ -912,7 +922,7 @@ function rHome(p){
     : '';
   p.innerHTML='<div class="home-wrap">'
     +'<div class="home-title">Checklist Funilaria</div>'
-    +'<div class="home-sub">Selecione uma opcao para continuar</div>'
+    +'<div class="home-sub">Selecione uma opção para continuar</div>'
     +novoBtnHtml
     +'<button class="home-btn hist" onclick="verHistorico()"><div class="home-btn-ico"><svg class="svg-i" aria-hidden="true"><use href="#i-folder"/></svg></div><div><div class="home-btn-title">Ver Checklists</div><div class="home-btn-sub">Consultar vistorias realizadas</div></div></button>'
   +'</div>';
@@ -996,9 +1006,9 @@ function rHistData(p, checklists){
     +'<button onclick="atualizarHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Atualizar</button>'
   +'</div>'
     +'<div class="hist-filters">'
-      +'<div class="hist-search-wrap"><span class="hist-search-icon"><svg class="svg-i" aria-hidden="true"><use href="#i-search"/></svg></span><input class="hist-search-input" type="text" id="hist-search" placeholder="Buscar por placa ou tecnico..."></div>'
+      +'<div class="hist-search-wrap"><span class="hist-search-icon"><svg class="svg-i" aria-hidden="true"><use href="#i-search"/></svg></span><input class="hist-search-input" type="text" id="hist-search" placeholder="Buscar por placa ou técnico..."></div>'
       +'<button class="comp-filter-btn'+((_filtroComplemento)?' on':'')+'" id="btn-comp" onclick="toggleFiltroComplemento()"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg> Apenas com complemento</button>'
-      +'<div class="hist-date-row"><div class="hist-date-group"><label>De</label><input class="hist-date-input" type="date" id="hist-de"></div><div class="hist-date-group"><label>Ate</label><input class="hist-date-input" type="date" id="hist-ate"></div><button class="hist-clear-btn" onclick="limparFiltros()"><svg class="svg-i" aria-hidden="true"><use href="#i-x"/></svg></button></div>'
+      +'<div class="hist-date-row"><div class="hist-date-group"><label>De</label><input class="hist-date-input" type="date" id="hist-de"></div><div class="hist-date-group"><label>Até</label><input class="hist-date-input" type="date" id="hist-ate"></div><button class="hist-clear-btn" onclick="limparFiltros()"><svg class="svg-i" aria-hidden="true"><use href="#i-x"/></svg></button></div>'
     +'</div>'
     +'<div id="hist-list"></div>';
   document.getElementById('hist-search').addEventListener('input',filtrarHist);
@@ -1083,8 +1093,8 @@ function renderHistList(list){
         +'<div class="hist-time"><span class="hist-hora">'+(entry._hora||'--:--')+'</span></div>'
         +'<div class="hist-info"><div class="hist-placa">'+placa+'</div><div class="hist-meta"><svg class="svg-i" aria-hidden="true"><use href="#i-user"/></svg> '+(entry.Tecnico_Desmontagem||'-')+'</div><div class="hist-stats">';
       if(desm>0)              html+='<span class="hist-stat de">'+desm+' desmontada'+(desm!==1?'s':'')+'</span>';
-      if(rec>0)               html+='<span class="hist-stat re">'+rec+' recuperacao</span>';
-      if(desm===0&&total>0)   html+='<span class="hist-stat ok">Todas nao desmontadas</span>';
+      if(rec>0)               html+='<span class="hist-stat re">'+rec+' recuperação</span>';
+      if(desm===0&&total>0)   html+='<span class="hist-stat ok">Todas não desmontadas</span>';
       if(entry._complemento)  html+='<span class="hist-stat comp"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg> Complemento</span>';
       html+='</div></div><span class="hist-arrow"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-r"/></svg></span></div>';
     });
@@ -1113,7 +1123,7 @@ function setDetFiltro(f){
 function rDetLoading(p){
   _detFiltro='todos';
   uiTop('DETALHES','',ST.detPlaca||'-');
-  p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Historico</button>'
+  p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Histórico</button>'
     +'<div style="text-align:center;padding:30px;color:#888;font-size:15px">Carregando...</div>';
   document.getElementById('ls').classList.add('on');
   document.getElementById('lm').textContent='Carregando...';
@@ -1127,9 +1137,9 @@ function rDetLoading(p){
         document.getElementById('ls').classList.remove('on');
         p.innerHTML='<div style="text-align:center;padding:40px 20px">'
           +'<div style="font-size:48px;margin-bottom:16px"><svg class="svg-i" aria-hidden="true"><use href="#i-trash"/></svg></div>'
-          +'<div style="font-size:17px;font-weight:600;color:var(--ink);margin-bottom:8px">Registro nao encontrado</div>'
-          +'<div style="font-size:14px;color:var(--ink3);margin-bottom:24px">Este checklist foi excluido ou nao esta mais disponivel.</div>'
-          +'<button class="snw" style="font-size:15px;padding:14px 28px" onclick="voltarDoDetalhe()">Voltar ao historico</button>'
+          +'<div style="font-size:17px;font-weight:600;color:var(--ink);margin-bottom:8px">Registro não encontrado</div>'
+          +'<div style="font-size:14px;color:var(--ink3);margin-bottom:24px">Este checklist foi excluído ou não está mais disponível.</div>'
+          +'<button class="snw" style="font-size:15px;padding:14px 28px" onclick="voltarDoDetalhe()">Voltar ao histórico</button>'
         +'</div>';
         return;
       }
@@ -1175,8 +1185,8 @@ function rDetLoading(p){
       rDetData(p, { checklist: mappedCl, itens: itensNormais, pecas: pecas });
     } catch(e) {
       document.getElementById('ls').classList.remove('on');
-      p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Historico</button>'
-        +'<div class="hist-empty">Erro de conexao: '+e.message+'</div>';
+      p.innerHTML='<button class="back-link" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Histórico</button>'
+        +'<div class="hist-empty">Erro de conexão: '+e.message+'</div>';
     }
   })();
 }
@@ -1186,7 +1196,7 @@ function rDetData(p, res){
   var c=res.checklist, itens=res.itens, pecas=res.pecas;
   if(c.Placa) ST.detPlaca=c.Placa;
   var mo=0,de=0,flagCount=0;
-  var flagLabels={'troca':'<svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca','recuperacao':'<svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao','celula':'<svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula'};
+  var flagLabels={'troca':'<svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca','recuperacao':'<svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperação','celula':'<svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Célula'};
   var flagColors={'troca':'var(--bl)','recuperacao':'var(--pu)','celula':'var(--gr)'};
   itens.forEach(function(it){ if(it.Status==='montado') mo++; else if(it.Status==='desmontado'){ de++; if(it.TipoFlag) flagCount++; } });
   var temComplemento=isRec(c.Complemento);
@@ -1195,7 +1205,7 @@ function rDetData(p, res){
     && c._editado === false
     && _ultimoChecklist && _ultimoChecklist.id === c._rawId;
   var h='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
-    +'<button class="back-link" style="margin-bottom:0" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Historico</button>'
+    +'<button class="back-link" style="margin-bottom:0" onclick="voltarDoDetalhe()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Histórico</button>'
     +'<button onclick="compartilharChecklist()" style="background:none;border:1.5px solid var(--rule);color:var(--ink2);font-size:13px;font-weight:600;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px"><svg class="svg-i" aria-hidden="true"><use href="#i-link"/></svg> Compartilhar</button>'
   +'</div>';
   if(podeEditar) h+='<button style="display:flex;align-items:center;gap:8px;background:var(--am-l);color:var(--am);border:1.5px solid #D4A843;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif;width:100%;margin-bottom:14px" onclick="carregarParaEditar(\''+c._rawId+'\')"><svg class="svg-i" aria-hidden="true"><use href="#i-edit"/></svg> Editar este checklist (apenas uma vez)</button>';
@@ -1206,7 +1216,7 @@ function rDetData(p, res){
       +'<div class="dh-row"><span class="dh-ic"><svg class="svg-i" aria-hidden="true"><use href="#i-user"/></svg></span>'+(c.Tecnico_Desmontagem||'-')+'</div>'
       +(temComplemento?'<div class="dh-comp"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg> Teve complemento</div>':'')
     +'</div></div>';
-  h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Nao desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div></div>';
+  h+='<div class="s4"><div class="sbox"><div class="snum t">'+itens.length+'</div><div class="slbl">Total</div></div><div class="sbox"><div class="snum mo">'+mo+'</div><div class="slbl">Não desm.</div></div><div class="sbox"><div class="snum de">'+de+'</div><div class="slbl">Desmontado</div></div><div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div></div>';
   h+='<div class="det-chips"><button class="det-chip'+(_detFiltro==='todos'?' on':'')+'" onclick="setDetFiltro(\'todos\')">Todos ('+itens.length+')</button><button class="det-chip'+(_detFiltro==='desm'?' on':'')+'" onclick="setDetFiltro(\'desm\')">Desmontados ('+de+')</button></div>';
   var secoesMostradas=0;
   ['Frente','Lateral','Traseira','Interna'].forEach(function(sec){
@@ -1216,15 +1226,15 @@ function rDetData(p, res){
     var visiveis = _detFiltro==='desm' ? si.filter(function(i){ return i.Status==='desmontado'; }) : si;
     if(!visiveis.length) return;
     secoesMostradas++;
-    h+='<div class="det-section"><div class="det-sec-hdr"><span>'+sec.toUpperCase()+'</span><span style="font-size:10px;opacity:.6">'+ms+' nao desm. &middot; '+ds+' desmontados</span></div>';
+    h+='<div class="det-section"><div class="det-sec-hdr"><span>'+sec.toUpperCase()+'</span><span style="font-size:10px;opacity:.6">'+ms+' não desm. &middot; '+ds+' desmontados</span></div>';
     visiveis.forEach(function(it){
       var st=it.Status||'', stCls=st==='montado'?'montado':st==='desmontado'?'desmontado':'empty';
-      var stLbl=st==='montado'?'Nao desmontado':st==='desmontado'?'Desmontado':'-';
+      var stLbl=st==='montado'?'Não desmontado':st==='desmontado'?'Desmontado':'-';
       var fotos=(it.Foto||'').split('|').filter(function(u){ return u.trim(); });
       var flagHtml = '';
       var tipoFlag = it.TipoFlag || (isRec(it.Recuperacao) ? 'recuperacao' : null);
       if (tipoFlag) flagHtml = '<div style="font-size:11px;font-weight:600;color:'+flagColors[tipoFlag]+';margin-top:3px">'+flagLabels[tipoFlag]+'</div>';
-      h+='<div class="det-item'+(st==='desmontado'?' desm':'')+'"><span class="det-ref">'+it.Ref+'</span><div style="flex:1"><div class="det-desc">'+it.Descricao+'</div>'+flagHtml+(it.Observacao?'<div class="det-obs">'+it.Observacao+'</div>':'');
+      h+='<div class="det-item'+(st==='desmontado'?' desm':'')+'"><span class="det-ref">'+it.Ref+'</span><div style="flex:1"><div class="det-desc">'+ac(it.Descricao)+'</div>'+flagHtml+(it.Observacao?'<div class="det-obs">'+it.Observacao+'</div>':'');
       h+=thumbsHtml(fotos);
       h+='</div><span class="det-status '+stCls+'">'+stLbl+'</span></div>';
     });
@@ -1232,10 +1242,10 @@ function rDetData(p, res){
   });
   if(_detFiltro==='desm' && !secoesMostradas) h+='<div class="det-empty">Nenhum item desmontado neste checklist.</div>';
   if(pecas&&pecas.length){
-    h+='<div class="det-section"><div class="det-sec-hdr">PECAS REMOVIDAS</div>';
+    h+='<div class="det-section"><div class="det-sec-hdr">PEÇAS REMOVIDAS</div>';
     pecas.forEach(function(pc){
       var pfUrls=(pc.Foto||'').split('|').filter(function(u){ return u.trim(); });
-      h+='<div class="det-item"><div style="flex:1"><div class="det-desc">'+(pc.Descricao_Item||'')+'</div>'+(pc.Observacao?'<div class="det-obs">'+pc.Observacao+'</div>':'');
+      h+='<div class="det-item"><div style="flex:1"><div class="det-desc">'+ac(pc.Descricao_Item||'')+'</div>'+(pc.Observacao?'<div class="det-obs">'+pc.Observacao+'</div>':'');
       h+=thumbsHtml(pfUrls);
       h+='</div></div>';
     });
@@ -1249,28 +1259,28 @@ function listaDestaquesHtml(){
   var porZona = {};
   CAT.filter(function(i){ return i.destaque; }).forEach(function(i){
     if(!porZona[i.s]) porZona[i.s]=[];
-    porZona[i.s].push(i.d);
+    porZona[i.s].push(ac(i.d));
   });
   var linhas = Object.keys(porZona).map(function(zona){
     return '<div style="margin-top:4px"><strong>'+zona+':</strong> '+porZona[zona].join(', ')+'</div>';
   }).join('');
   return '<div class="notice" style="margin-top:10px;border-color:#D4A843;background:var(--am-l);color:var(--am)">'
-    +'<div style="font-weight:700">Atencao redobrada nestes itens</div>'
-    +'<div style="font-size:13px;margin-top:2px">Foto obrigatoria mesmo que a peca nao seja desmontada:</div>'
+    +'<div style="font-weight:700">Atenção redobrada nestes itens</div>'
+    +'<div style="font-size:13px;margin-top:2px">Foto obrigatória mesmo que a peça não seja desmontada:</div>'
     +linhas
   +'</div>';
 }
 function rHdr(p){
   if(!ST.data){ var _n=new Date(); ST.data=new Date(_n.getTime()-3*60*60*1000).toISOString().split('T')[0]; }
   var tecField = _tecnico
-    ? '<div class="fld"><label>Tecnico</label><div style="background:var(--bg);border:1.5px solid var(--rule);border-radius:9px;padding:14px;font-size:16px;color:var(--ink);font-weight:500">'+_tecnico.nome+'</div></div>'
-    : '<div class="fld"><label>Tecnico *</label><select class="tec-select" id="i-td"><option value="">Selecione o tecnico...</option>'+TECNICOS.map(function(t){ return '<option value="'+t+'"'+(ST.td===t?' selected':'')+'>'+t+'</option>'; }).join('')+'</select></div>';
+    ? '<div class="fld"><label>Técnico</label><div style="background:var(--bg);border:1.5px solid var(--rule);border-radius:9px;padding:14px;font-size:16px;color:var(--ink);font-weight:500">'+_tecnico.nome+'</div></div>'
+    : '<div class="fld"><label>Técnico *</label><select class="tec-select" id="i-td"><option value="">Selecione o técnico...</option>'+TECNICOS.map(function(t){ return '<option value="'+t+'"'+(ST.td===t?' selected':'')+'>'+t+'</option>'; }).join('')+'</select></div>';
   var div=document.createElement('div');
   div.innerHTML='<div class="card">'
     +'<div class="f2"><div><label>Placa *</label><input class="ip" type="text" id="i-pl" placeholder="ABC1234" maxlength="8"></div><div><label>Data *</label><input type="date" id="i-dt"></div></div>'
     +tecField
   +'</div>'
-  +'<div class="notice">Em caso de ausencia de peca, solicitar ao Facilitador o complemento.</div>'
+  +'<div class="notice">Em caso de ausência de peça, solicitar ao Facilitador o complemento.</div>'
   +listaDestaquesHtml();
   p.appendChild(div);
   document.getElementById('i-pl').value=ST.placa;
@@ -1317,14 +1327,14 @@ function refreshSecaoHeader(){
   if(SECS.indexOf(s)<0) return;
   var el=document.getElementById('shdr-pend'); if(!el) return;
   var n=pendentesSecao(s).length;
-  el.innerHTML = n>0 ? ('<svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg> '+n+(n===1?' foto obrigatoria pendente nesta secao':' fotos obrigatorias pendentes nesta secao')) : '';
+  el.innerHTML = n>0 ? ('<svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg> '+n+(n===1?' foto obrigatória pendente nesta seção':' fotos obrigatórias pendentes nesta seção')) : '';
   el.classList.toggle('show', n>0);
 }
 function rSec(p,sec){
   var its=CAT.filter(function(i){ return i.s===sec; });
   var dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
   var hdr=document.createElement('div'); hdr.className='shdr';
-  hdr.innerHTML='<span class="shn">'+(SECS.indexOf(sec)+1)+'/4</span><span class="sht">'+sec+' do veiculo</span><span class="shp" id="sp">'+dn+'/'+its.length+'</span>';
+  hdr.innerHTML='<span class="shn">'+(SECS.indexOf(sec)+1)+'/4</span><span class="sht">'+sec+' do veículo</span><span class="shp" id="sp">'+dn+'/'+its.length+'</span>';
   p.appendChild(hdr);
   var pendHdr=document.createElement('div'); pendHdr.className='shdr-pend'; pendHdr.id='shdr-pend';
   p.appendChild(pendHdr);
@@ -1333,25 +1343,25 @@ function rSec(p,sec){
     var isDestaque = !!it.destaque;
     var xtrOpen = cc.st==='desmontado' || isDestaque;
     d.className='itm '+(cc.st||'')+(isDestaque?' destaque':''); d.id='cd-'+kk;
-    var bannerHtml = isDestaque ? '<div class="destaque-banner"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg></span>Foto obrigatoria neste item</div>' : '';
+    var bannerHtml = isDestaque ? '<div class="destaque-banner"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg></span>Foto obrigatória neste item</div>' : '';
     var flagsHtml = cc.st==='desmontado'
       ? '<div class="flag-row" id="fr-'+kk+'">'
           +'<button class="flag-btn troca'+(cc.flag==='troca'?' on':'')+'" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca</button>'
-          +'<button class="flag-btn recuperacao'+(cc.flag==='recuperacao'?' on':'')+'" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')"><svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao</button>'
-          +'<button class="flag-btn celula'+(cc.flag==='celula'?' on':'')+'" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')"><svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula</button>'
+          +'<button class="flag-btn recuperacao'+(cc.flag==='recuperacao'?' on':'')+'" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')"><svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperação</button>'
+          +'<button class="flag-btn celula'+(cc.flag==='celula'?' on':'')+'" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')"><svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Célula</button>'
         +'</div>'
       : '';
     var fotoObrigMsg = cc.st==='desmontado'
-      ? 'Registre as 2 fotos obrigatorias para itens desmontados'
-      : 'Registre pelo menos 1 foto de evidencia deste item';
-    d.innerHTML=bannerHtml+'<div class="itop"><span class="iref">'+it.r+'</span><div style="flex:1"><span class="idesc">'+it.d+'</span></div><span class="idot '+(cc.st||'')+'" id="dt-'+kk+'"></span></div>'
+      ? 'Registre as 2 fotos obrigatórias para itens desmontados'
+      : 'Registre pelo menos 1 foto de evidência deste item';
+    d.innerHTML=bannerHtml+'<div class="itop"><span class="iref">'+it.r+'</span><div style="flex:1"><span class="idesc">'+ac(it.d)+'</span></div><span class="idot '+(cc.st||'')+'" id="dt-'+kk+'"></span></div>'
       +'<div class="sbr">'
-        +'<button class="sb '+(cc.st==='montado'?'mont':'')+'" data-k="'+kk+'" data-v="montado" onclick="setSt(this)"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-check"/></svg></span>Nao desmontado</button>'
+        +'<button class="sb '+(cc.st==='montado'?'mont':'')+'" data-k="'+kk+'" data-v="montado" onclick="setSt(this)"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-check"/></svg></span>Não desmontado</button>'
         +'<button class="sb '+(cc.st==='desmontado'?'desm':'')+'" data-k="'+kk+'" data-v="desmontado" onclick="setSt(this)"><span class="ic"><svg class="svg-i" aria-hidden="true"><use href="#i-wrench"/></svg></span>Desmontado</button>'
       +'</div>'
       +'<div class="xtr '+(xtrOpen?'open':'')+'" id="ex-'+kk+'">'
         +flagsHtml
-        +'<textarea rows="2" placeholder="Observacao..." oninput="ST.chk[\''+kk+'\'].o=this.value">'+(cc.o||'')+'</textarea>'
+        +'<textarea rows="2" placeholder="Observação..." oninput="ST.chk[\''+kk+'\'].o=this.value">'+(cc.o||'')+'</textarea>'
         +'<div class="fotos-wrap" id="fw-'+kk+'"></div>'
         +'<div class="foto-obrig" id="fo-'+kk+'">'+fotoObrigMsg+'</div>'
       +'</div>';
@@ -1377,14 +1387,14 @@ function setSt(btn){
   if(cc.st==='desmontado' && !fr){
     var flagsWrap=document.createElement('div'); flagsWrap.className='flag-row'; flagsWrap.id='fr-'+kk;
     flagsWrap.innerHTML='<button class="flag-btn troca" data-tipo="troca" onclick="setFlag(\''+kk+'\',\'troca\')"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca</button>'
-      +'<button class="flag-btn recuperacao" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')"><svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao</button>'
-      +'<button class="flag-btn celula" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')"><svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula</button>';
+      +'<button class="flag-btn recuperacao" data-tipo="recuperacao" onclick="setFlag(\''+kk+'\',\'recuperacao\')"><svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperação</button>'
+      +'<button class="flag-btn celula" data-tipo="celula" onclick="setFlag(\''+kk+'\',\'celula\')"><svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Célula</button>';
     ex.insertBefore(flagsWrap, ex.firstChild);
   } else if(cc.st!=='desmontado' && fr){
     fr.remove();
   }
   var fo=document.getElementById('fo-'+kk);
-  if(fo) fo.textContent = cc.st==='desmontado' ? 'Registre as 2 fotos obrigatorias para itens desmontados' : 'Registre pelo menos 1 foto de evidencia deste item';
+  if(fo) fo.textContent = cc.st==='desmontado' ? 'Registre as 2 fotos obrigatórias para itens desmontados' : 'Registre pelo menos 1 foto de evidência deste item';
   var sec=kk.split('_')[0],its=CAT.filter(function(i){ return i.s===sec; }),dn=its.filter(function(i){ return ST.chk[ky(i)].st; }).length;
   var sp=document.getElementById('sp'); if(sp) sp.textContent=dn+'/'+its.length;
   refreshSecaoHeader();
@@ -1457,7 +1467,7 @@ function retryFotoItem(kk,idx){
 }
 function delFotoItem(kk,idx){ ST.chk[kk].fotos.splice(idx,1); renderFotos(kk); refreshSecaoHeader(); salvarRascunho(); }
 
-// ── PECAS REMOVIDAS ──────────────────────────────────────────────────────────
+// ── PEÇAS REMOVIDAS ──────────────────────────────────────────────────────────
 function renderFotosPeca(i){
   var pec=ST.pecas[i], wrap=document.getElementById('pfw-'+i); if(!wrap) return;
   var fotos=pec.fotos||[], html='';
@@ -1473,11 +1483,11 @@ function renderFotosPeca(i){
 }
 function rPecas(p){
   var hdr=document.createElement('div'); hdr.className='shdr';
-  hdr.innerHTML='<span class="shn">5/5</span><span class="sht">Pecas Removidas</span>';
+  hdr.innerHTML='<span class="shn">5/5</span><span class="sht">Peças Removidas</span>';
   p.appendChild(hdr);
   var lbls=[
-    'Caixas dentro do carro com pecas desmontadas (identificar com a placa e lacrar)',
-    'Pecas removidas fora do carro (identificadas com etiqueta e armazenadas adequadamente)'
+    'Caixas dentro do carro com peças desmontadas (identificar com a placa e lacrar)',
+    'Peças removidas fora do carro (identificadas com etiqueta e armazenadas adequadamente)'
   ];
   lbls.forEach(function(lbl,i){
     var pec=ST.pecas[i], d=document.createElement('div'); d.className='pc';
@@ -1513,29 +1523,29 @@ function rResumo(p){
   var flagCount = troca.length + rec.length + celula.length;
   var h='<div class="s4">'
     +'<div class="sbox"><div class="snum t">'+CAT.length+'</div><div class="slbl">Total</div></div>'
-    +'<div class="sbox"><div class="snum mo">'+mo.length+'</div><div class="slbl">Nao desm.</div></div>'
+    +'<div class="sbox"><div class="snum mo">'+mo.length+'</div><div class="slbl">Não desm.</div></div>'
     +'<div class="sbox"><div class="snum de">'+de.length+'</div><div class="slbl">Desmontado</div></div>'
     +'<div class="sbox"><div class="snum re">'+flagCount+'</div><div class="slbl">Com flag</div></div>'
   +'</div>';
-  if(pend.length>0) h+='<div class="wn">'+pend.length+' item(ns) sem avaliacao.</div>';
-  h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(ST.placa||'-').toUpperCase()+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(ST.data?ST.data.split('-').reverse().join('/'):'-')+'</span></div><div class="ir"><span class="ik">Tecnico</span><span class="iv">'+(ST.td||'-')+'</span></div></div>';
-  var flagLabels = {troca:'<svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca',recuperacao:'<svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperacao',celula:'<svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Celula'};
+  if(pend.length>0) h+='<div class="wn">'+pend.length+' item(ns) sem avaliação.</div>';
+  h+='<div class="ib"><div class="ir"><span class="ik">Placa</span><span class="iv pv">'+(ST.placa||'-').toUpperCase()+'</span></div><div class="ir"><span class="ik">Data</span><span class="iv">'+(ST.data?ST.data.split('-').reverse().join('/'):'-')+'</span></div><div class="ir"><span class="ik">Técnico</span><span class="iv">'+(ST.td||'-')+'</span></div></div>';
+  var flagLabels = {troca:'<svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Troca',recuperacao:'<svg class="svg-i" aria-hidden="true"><use href="#i-undo"/></svg> Recuperação',celula:'<svg class="svg-i" aria-hidden="true"><use href="#i-grid"/></svg> Célula'};
   [['troca',troca],['recuperacao',rec],['celula',celula]].forEach(function(pair){
     var tipo=pair[0], lista=pair[1];
     if(!lista.length) return;
     h+='<div class="res-sec"><div class="res-sec-title">'+flagLabels[tipo]+' <span class="res-badge re">'+lista.length+'</span></div>';
-    lista.forEach(function(it){ h+='<div class="res-item"><div class="res-dot re"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div></div></div>'; });
+    lista.forEach(function(it){ h+='<div class="res-item"><div class="res-dot re"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+ac(it.d)+'</div></div></div>'; });
     h+='</div>';
   });
-  if(de.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Desmontadas <span class="res-badge de">'+de.length+'</span></div>'; de.forEach(function(it){ var cc=ST.chk[ky(it)]; h+='<div class="res-item"><div class="res-dot de"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div>'+(cc.o?'<div style="font-size:12px;color:#888;font-style:italic;margin-top:2px">'+cc.o+'</div>':'')+'<div style="font-size:11px;color:#888;margin-top:2px">'+cc.fotos.length+' foto(s)</div></div></div>'; }); h+='</div>'; }
-  if(mo.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Nao desmontadas <span class="res-badge mo">'+mo.length+'</span></div>'; mo.forEach(function(it){ h+='<div class="res-item"><div class="res-dot mo"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+it.d+'</div></div></div>'; }); h+='</div>'; }
+  if(de.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Desmontadas <span class="res-badge de">'+de.length+'</span></div>'; de.forEach(function(it){ var cc=ST.chk[ky(it)]; h+='<div class="res-item"><div class="res-dot de"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+ac(it.d)+'</div>'+(cc.o?'<div style="font-size:12px;color:#888;font-style:italic;margin-top:2px">'+cc.o+'</div>':'')+'<div style="font-size:11px;color:#888;margin-top:2px">'+cc.fotos.length+' foto(s)</div></div></div>'; }); h+='</div>'; }
+  if(mo.length>0){ h+='<div class="res-sec"><div class="res-sec-title">Não desmontadas <span class="res-badge mo">'+mo.length+'</span></div>'; mo.forEach(function(it){ h+='<div class="res-item"><div class="res-dot mo"></div><div><div class="res-sec2">'+it.s+' &middot; '+it.r+'</div><div class="res-desc">'+ac(it.d)+'</div></div></div>'; }); h+='</div>'; }
   p.innerHTML=h;
 }
 
 // ── NAVEGACAO ────────────────────────────────────────────────────────────────
 function goNext(){
   var s=STEPS[ST.step];
-  if(s==='hdr'){ if(!ST.placa||!ST.data||!ST.td){ mostrarModal('Preencha a Placa, a Data e confirme o Tecnico.','<svg class="svg-i" aria-hidden="true"><use href="#i-clipboard"/></svg>'); return; } }
+  if(s==='hdr'){ if(!ST.placa||!ST.data||!ST.td){ mostrarModal('Preencha a Placa, a Data e confirme o Técnico.','<svg class="svg-i" aria-hidden="true"><use href="#i-clipboard"/></svg>'); return; } }
   if(SECS.indexOf(s)>=0){
     var its=CAT.filter(function(i){ return i.s===s; });
     var pending=its.filter(function(i){ return !ST.chk[ky(i)].st; });
@@ -1562,21 +1572,21 @@ function goNext(){
         if(semFoto.length>0){
           semFoto.forEach(function(it){ var fo=document.getElementById('fo-'+ky(it)); if(fo) fo.classList.add('show'); });
           var first=document.getElementById('cd-'+ky(semFoto[0])); if(first) first.scrollIntoView({behavior:'smooth',block:'center'});
-          mostrarModal('Registre as fotos obrigatorias antes de continuar. ('+semFoto.length+' pendente(s))','<svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg>');
+          mostrarModal('Registre as fotos obrigatórias antes de continuar. ('+semFoto.length+' pendente(s))','<svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg>');
           return;
         }
       }
       ST.step++; render();
     }
     if(pending.length===its.length){
-      mostrarConfirmacao('Nenhum item foi avaliado nesta secao.\nConfirma que nenhum foi desmontado?','<svg class="svg-i i-info" aria-hidden="true"><use href="#i-help"/></svg>',function(){
+      mostrarConfirmacao('Nenhum item foi avaliado nesta seção.\nConfirma que nenhum foi desmontado?','<svg class="svg-i i-info" aria-hidden="true"><use href="#i-help"/></svg>',function(){
         its.forEach(function(it){ ST.chk[ky(it)].st='montado'; });
         prosseguirSecao();
       });
       return;
     }
     if(pending.length>0){
-      mostrarConfirmacao(pending.length+' item(ns) ainda sem avaliacao.\nOs itens pendentes nao foram desmontados?','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>',function(){
+      mostrarConfirmacao(pending.length+' item(ns) ainda sem avaliacao.\nOs itens pendentes não foram desmontados?','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>',function(){
         pending.forEach(function(it){ ST.chk[ky(it)].st='montado'; });
         prosseguirSecao();
       });
@@ -1589,7 +1599,7 @@ function goNext(){
     var pecasNaoProntas = ST.pecas.some(function(p){ return (p.fotos||[]).some(function(f){ return f.status==='uploading' || f.status==='error'; }); });
     if(pecasNaoProntas){
       var temErroP = ST.pecas.some(function(p){ return (p.fotos||[]).some(function(f){ return f.status==='error'; }); });
-      mostrarModal(temErroP ? 'Uma ou mais fotos de pecas removidas falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos de pecas removidas terminar antes de continuar.', temErroP?'<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>':'<svg class="svg-i" aria-hidden="true"><use href="#i-clock"/></svg>');
+      mostrarModal(temErroP ? 'Uma ou mais fotos de peças removidas falharam ao enviar. Toque em "tentar novamente" antes de continuar.' : 'Aguarde o envio das fotos de peças removidas terminar antes de continuar.', temErroP?'<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>':'<svg class="svg-i" aria-hidden="true"><use href="#i-clock"/></svg>');
       return;
     }
   }
@@ -1625,13 +1635,13 @@ function enviar(){
   (async function(){
     try {
       if(fotosPendentesGlobal()){
-        mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Volte e aguarde/tente novamente antes de enviar.','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>');
+        mostrarModal('Ainda há fotos sendo enviadas ou com erro. Volte e aguarde/tente novamente antes de enviar.','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>');
         return;
       }
-      loading('Buscando tecnico...');
+      loading('Buscando técnico...');
 
       var tecs = await sbSelect('tecnicos', 'select=id&nome=eq.'+encodeURIComponent(ST.td));
-      if(!tecs||!tecs[0]) throw new Error('Tecnico nao encontrado: '+ST.td);
+      if(!tecs||!tecs[0]) throw new Error('Técnico não encontrado: '+ST.td);
       var tecId = tecs[0].id;
 
       loading('Criando registro...');
@@ -1669,7 +1679,7 @@ function enviar(){
       // Inserir pecas removidas (fotos ja estao no R2 — so grava a referencia)
       for(var pi=0; pi<ST.pecas.length; pi++){
         var pec = ST.pecas[pi];
-        loading('Salvando peca '+(pi+1)+'...');
+        loading('Salvando peça '+(pi+1)+'...');
         var pitem = await sbInsert('checklist_itens', {
           checklist_id: cl.id,
           zona: 'Pecas',
@@ -1697,8 +1707,8 @@ function sucesso(id){
   setNav(false);
   limparRascunho();
   _ultimoChecklist = null; // reset — o próximo login verifica de novo
-  document.getElementById('pg').innerHTML='<div class="sw"><div class="si"><svg class="svg-i i-ok" aria-hidden="true"><use href="#i-check-circle"/></svg></div><div class="st">Checklist enviado!</div><div class="ss">Dados salvos no banco e fotos no Supabase Storage.</div><div class="sid">ID: '+id+'</div><button class="snw" onclick="voltarHome()">Voltar ao inicio</button></div>';
-  uiTop('CONCLUIDO','','');
+  document.getElementById('pg').innerHTML='<div class="sw"><div class="si"><svg class="svg-i i-ok" aria-hidden="true"><use href="#i-check-circle"/></svg></div><div class="st">Checklist enviado!</div><div class="ss">Dados salvos no banco e fotos no Supabase Storage.</div><div class="sid">ID: '+id+'</div><button class="snw" onclick="voltarHome()">Voltar ao início</button></div>';
+  uiTop('CONCLUÍDO','','');
   verificarUltimoChecklist();
 }
 
@@ -1713,7 +1723,7 @@ async function carregarParaEditar(clId){
   try {
     var cls = await sbSelect('checklists', 'select=*&id=eq.'+clId);
     var cl  = cls && cls[0];
-    if(!cl){ loadingOff(); mostrarModal('Checklist nao encontrado.','<svg class="svg-i i-err" aria-hidden="true"><use href="#i-x-circle"/></svg>'); return; }
+    if(!cl){ loadingOff(); mostrarModal('Checklist não encontrado.','<svg class="svg-i i-err" aria-hidden="true"><use href="#i-x-circle"/></svg>'); return; }
 
     var itens = await sbSelect('checklist_itens',
       'select=id,zona,item,situacao,desmontado,recuperacao,tipo_flag,observacao&checklist_id=eq.'+clId+'&zona=neq.Pecas');
@@ -1751,7 +1761,7 @@ async function carregarParaEditar(clId){
 
 async function salvarEdicao(){
   if(fotosPendentesGlobal()){
-    mostrarModal('Ainda ha fotos sendo enviadas ou com erro. Aguarde/tente novamente antes de salvar.','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>');
+    mostrarModal('Ainda há fotos sendo enviadas ou com erro. Aguarde/tente novamente antes de salvar.','<svg class="svg-i i-warn" aria-hidden="true"><use href="#i-alert"/></svg>');
     return;
   }
   loading('Atualizando checklist...');
