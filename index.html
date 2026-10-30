@@ -575,6 +575,18 @@ async function sbSelect(table, params) {
   return res.json();
 }
 
+async function sbSelectAll(table, params) {
+  var PAG = 1000, off = 0, all = [];
+  while (true) {
+    var lote = await sbSelect(table, params + '&limit=' + PAG + '&offset=' + off);
+    all = all.concat(lote);
+    if (lote.length < PAG) break;
+    off += PAG;
+    if (off > 200000) break;
+  }
+  return all;
+}
+
 async function sbInsert(table, body) {
   var h = Object.assign({}, getAuthHeaders(), { 'Prefer': 'return=representation' });
   var res = await sbFetch(API + '/' + table, { method: 'POST', headers: h, body: JSON.stringify(body) });
@@ -956,18 +968,22 @@ function rHistLoading(p){
 
   (async function(){
     try {
-      var cls = await sbSelect('checklists',
-        'select=id,placa,data,tem_complemento,created_at,tecnicos(nome)&order=data.desc,created_at.desc');
+      var cls = await sbSelectAll('checklists',
+        'select=id,placa,data,tem_complemento,created_at,tecnicos(nome)&order=data.desc,created_at.desc,id.desc');
 
       if(!cls || cls.length===0){ rHistData(p,[]); return; }
 
       // Usa RPC para agregar stats sem limite de linhas
-      var statsRes = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_checklist_stats', {
-        method: 'POST',
-        headers: Object.assign({}, getAuthHeaders(), {'Content-Type':'application/json'}),
-        body: JSON.stringify({ ids: cls.map(function(c){ return c.id; }) })
-      });
-      var statsData = statsRes.ok ? await statsRes.json() : [];
+      var ids = cls.map(function(c){ return c.id; });
+      var statsData = [];
+      for (var i = 0; i < ids.length; i += 500) {
+        var statsRes = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_checklist_stats', {
+          method: 'POST',
+          headers: Object.assign({}, getAuthHeaders(), {'Content-Type':'application/json'}),
+          body: JSON.stringify({ ids: ids.slice(i, i + 500) })
+        });
+        if (statsRes.ok) statsData = statsData.concat(await statsRes.json());
+      }
 
       var stats = {};
       (statsData || []).forEach(function(s){
