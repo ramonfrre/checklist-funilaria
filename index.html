@@ -840,6 +840,17 @@ var _allChecklists   = [];
 var _detRes          = null;
 var _detFiltro       = 'todos';
 var _filtroComplemento = false;
+var _histF = {q:'', de:'', ate:''};
+var _histScroll = 0;
+var _prevMode = null;
+var _usarCacheHist = false;
+try {
+  var _hf = JSON.parse(sessionStorage.getItem('cl_histf') || 'null');
+  if (_hf) { _histF = {q:_hf.q||'', de:_hf.de||'', ate:_hf.ate||''}; _filtroComplemento = !!_hf.comp; }
+} catch(e) {}
+function salvarFiltrosHist(){
+  try { sessionStorage.setItem('cl_histf', JSON.stringify({q:_histF.q, de:_histF.de, ate:_histF.ate, comp:_filtroComplemento})); } catch(e) {}
+}
 var _editMode        = false;
 var _editChecklistId = null;
 
@@ -894,6 +905,8 @@ function modalSim(){ var fn = _modalSimFn; fecharModal(); if(fn) fn(); }
 
 // ── RENDER ───────────────────────────────────────────────────────────────────
 function render(){
+  _usarCacheHist = (_prevMode === 'det' && ST.mode === 'hist');
+  _prevMode = ST.mode;
   salvarRascunho();
   salvarNavState();
   if (ST.mode === 'det') garantirHashRota(); else { limparHashRota(); _detPushed = false; }
@@ -962,6 +975,8 @@ function voltarHome(){ ST.mode='home'; render(); }
 function verHistorico(){ ST.mode='hist'; render(); }
 
 function rHistLoading(p){
+  if (_usarCacheHist && _allChecklists.length) { _usarCacheHist = false; rHistData(p, _allChecklists); return; }
+  _usarCacheHist = false;
   p.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
     +'<button class="back-link" style="margin-bottom:0" onclick="voltarHome()"><svg class="svg-i" aria-hidden="true"><use href="#i-chev-l"/></svg> Voltar</button>'
     +'<button onclick="verHistorico()" style="background:none;border:1.5px solid var(--rule);color:var(--ink3);font-size:13px;font-family:\'DM Sans\',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px"><svg class="svg-i" aria-hidden="true"><use href="#i-refresh"/></svg> Atualizar</button>'
@@ -1032,10 +1047,14 @@ function rHistData(p, checklists){
       +'<div class="hist-date-row"><div class="hist-date-group"><label>De</label><input class="hist-date-input" type="date" id="hist-de"></div><div class="hist-date-group"><label>Até</label><input class="hist-date-input" type="date" id="hist-ate"></div><button class="hist-clear-btn" onclick="limparFiltros()"><svg class="svg-i" aria-hidden="true"><use href="#i-x"/></svg></button></div>'
     +'</div>'
     +'<div id="hist-list"></div>';
+  document.getElementById('hist-search').value = _histF.q;
+  document.getElementById('hist-de').value = _histF.de;
+  document.getElementById('hist-ate').value = _histF.ate;
   document.getElementById('hist-search').addEventListener('input',filtrarHist);
   document.getElementById('hist-de').addEventListener('change',filtrarHist);
   document.getElementById('hist-ate').addEventListener('change',filtrarHist);
-  renderHistList(_allChecklists);
+  filtrarHist();
+  if (_histScroll) { var sa = document.getElementById('sa'); if (sa) sa.scrollTop = _histScroll; _histScroll = 0; }
 }
 
 function atualizarHistorico() {
@@ -1053,6 +1072,7 @@ function filtrarHist(){
   var s=document.getElementById('hist-search'),de=document.getElementById('hist-de'),ate=document.getElementById('hist-ate');
   if(!s) return;
   var q=s.value.toUpperCase().trim(),dv=de?de.value:'',av=ate?ate.value:'';
+  _histF = {q:s.value, de:dv, ate:av}; salvarFiltrosHist();
   var filtered=_allChecklists.filter(function(c){
     if(_filtroComplemento && !c._complemento) return false;
     var texto=((c.Placa||'')+' '+(c.Tecnico_Desmontagem||'')).toUpperCase();
@@ -1066,6 +1086,7 @@ function limparFiltros(){
   var s=document.getElementById('hist-search'); if(s) s.value='';
   var d=document.getElementById('hist-de'); if(d) d.value='';
   var a=document.getElementById('hist-ate'); if(a) a.value='';
+  _histF = {q:'', de:'', ate:''}; salvarFiltrosHist();
   renderHistList(_allChecklists);
 }
 // Hora em que o checklist foi registrado (created_at), sempre no fuso de Sao Paulo,
@@ -1124,7 +1145,7 @@ function renderHistList(list){
 }
 
 // ── DETALHE ──────────────────────────────────────────────────────────────────
-function verDetalhe(id, placa){ ST.mode='det'; ST.detId=id; ST.detPlaca=placa; render(); }
+function verDetalhe(id, placa){ var _sa=document.getElementById('sa'); if(ST.mode==='hist' && _sa) _histScroll=_sa.scrollTop; ST.mode='det'; ST.detId=id; ST.detPlaca=placa; render(); }
 
 function abrirFoto(src){
   var o=document.createElement('div'); o.className='foto-lightbox';
