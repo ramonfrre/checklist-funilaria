@@ -1208,7 +1208,12 @@ function rDetLoading(p){
 
       document.getElementById('ls').classList.remove('on');
 
-      var itensNormais = (itensRaw||[]).filter(function(it){ return it.zona!=='Pecas'; }).map(function(it){
+      var ordemCat = function(it){ var i = CAT.findIndex(function(c){ return c.s===it.zona && c.d===it.item; }); return i<0 ? 99999 : i; };
+      var itensNormais = (itensRaw||[]).filter(function(it){ return it.zona!=='Pecas'; })
+        .map(function(it, n){ return {it:it, o:ordemCat(it), n:n}; })
+        .sort(function(a,b){ return (a.o-b.o) || (a.n-b.n); })
+        .map(function(x){ return x.it; })
+        .map(function(it){
         var cat = CAT.find(function(c){ return c.s===it.zona && c.d===it.item; });
         return {
           Ref: cat ? cat.r : '',
