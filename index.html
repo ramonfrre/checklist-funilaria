@@ -205,6 +205,8 @@ input[type=file]{display:none}
 .det-thumbs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .det-thumb{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1.5px solid var(--rule);background:var(--bg);cursor:pointer}
 .det-empty{text-align:center;color:var(--ink3);font-size:14px;padding:26px 10px}
+.det-thumb-link{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;color:var(--ink3);font-size:10px;font-weight:600;text-align:center;line-height:1.15;padding:4px}
+.det-thumb-link .svg-i{width:18px;height:18px}
 .foto-lightbox{position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:16px}
 .foto-lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
 .fl-close{position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:20px;cursor:pointer}
@@ -1130,9 +1132,26 @@ function abrirFoto(src){
   o.onclick=function(){ o.remove(); };
   document.body.appendChild(o);
 }
+function driveId(u){
+  var m=/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]+)/.exec(u||'');
+  return m?m[1]:null;
+}
+function driveFallback(img){
+  var a=document.createElement('a');
+  a.className='det-thumb det-thumb-link'; a.href=img.getAttribute('data-orig'); a.target='_blank'; a.rel='noopener';
+  a.innerHTML='<svg class="svg-i" aria-hidden="true"><use href="#i-camera"/></svg><span>Abrir no Drive</span>';
+  img.replaceWith(a);
+}
 function thumbsHtml(fotos){
   if(!fotos.length) return '';
-  return '<div class="det-thumbs">'+fotos.map(function(u){ return '<img class="det-thumb" loading="lazy" alt="Foto" src="'+u.trim()+'" onclick="abrirFoto(this.src)">'; }).join('')+'</div>';
+  return '<div class="det-thumbs">'+fotos.map(function(u){
+    u=u.trim(); var id=driveId(u);
+    if(id){
+      var base='https://drive.google.com/thumbnail?id='+id;
+      return '<img class="det-thumb" loading="lazy" alt="Foto" src="'+base+'&sz=w320" data-full="'+base+'&sz=w1600" data-orig="'+u+'" onclick="abrirFoto(this.getAttribute(\'data-full\'))" onerror="driveFallback(this)">';
+    }
+    return '<img class="det-thumb" loading="lazy" alt="Foto" src="'+u+'" onclick="abrirFoto(this.src)">';
+  }).join('')+'</div>';
 }
 function setDetFiltro(f){
   _detFiltro=f;
